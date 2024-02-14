@@ -1,0 +1,2 @@
+# MoriMagazineAPI
+Versionamento MoriMagazineAPI
