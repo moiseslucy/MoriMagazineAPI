@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Inserir Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1>Inserir Produto</h1>
+    <form th:action="@{/produto/salvarProduto}" th:object="${produto}" method="POST">
+        <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
+        <input type="number" th:field="*{preco}" placeholder="Insira o preço" class="form-control mb-4 col-4">
+        <input type="date" th:field="*{compra}" placeholder="Insira a data de compra" class="form-control mb-4 col-4">
+        <button type="submit" class="btn btn-info col-2">Salvar</button>
+    </form>
+    <a th:href="@{/produto/listar}">Retornar para a Lista de Produtos</a>
+</div>
+</body>
+</html>
