@@ -6,6 +6,7 @@ import com.api.MoriMagazineAPI.service.ProdutoService;
 import jakarta.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,35 @@ public class ProdutoController {
         model.addAttribute("listarProdutos", produtoService.listarTodosProdutos());
         return "IndexProdutos";
     }
+ @GetMapping("/deletar/{id}")
+    public String mostrarFormularioExclusao(@PathVariable(value = "id") Integer id, Model model) {
+        // Buscar o produto pelo ID
+        ProdutoEntity produto = produtoService.getProdutoId(id);
+        
+        // Verificar se o produto existe
+        if (produto == null) {
+            // Se o produto não existir, redirecionar para a lista de produtos
+            return "redirect:/produto/listar";
+        }
+        
+        // Adicionar o produto à model
+        model.addAttribute("produto", produto);
+        
+        // Retornar o nome da página de confirmação de exclusão
+        return "ConfirmarExclusaoProduto";
+    }
 
-    @GetMapping("/deletar/{id}")
+    @PostMapping("/deletar/{id}")
     public String deletarProduto(@PathVariable(value = "id") Integer id) {
+        // Deletar o produto com o ID fornecido
         produtoService.deletarProduto(id);
+        
+        // Redirecionar o usuário de volta para a lista de produtos após a exclusão
         return "redirect:/produto/listar";
     }
+
+    // Outros métodos do controller
+
 
     @GetMapping("/criarForm")
     public String criarProdutoForm(Model model) {
@@ -76,5 +100,13 @@ public String salvarProduto(
 
         produtoService.atualizarProduto(produto.getId(), produto);
         return "redirect:/produto/listar";
+   
     }
+@GetMapping("/pesquisar")
+    public String pesquisarProdutoPorNome(@RequestParam("termo") String termo, Model model) {
+        List<ProdutoEntity> resultados = produtoService.getProdutoPorNome(termo);
+        model.addAttribute("resultados", resultados);
+        return "pesquisa-produto";
+    }
+
 }

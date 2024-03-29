@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Página Inicial - Mori Magazine</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: #20b2aa; /* Cor da lesma do mar */
+        }
+        h1 {
+            color: #ffffff; /* Branco */
+        }
+        .btn-primary {
+            background-color: #ffdcb5; /* Cor de rosa suave */
+            border-color: #ffdcb5; /* Cor de rosa suave */
+        }
+        .btn-primary:hover {
+            background-color: #ffb6c1; /* Rosa mais escuro */
+            border-color: #ffb6c1; /* Rosa mais escuro */
+        }
+        .container {
+            padding-bottom: 50px; /* Adiciona espaço abaixo dos botões */
+        }
+        .logo-container {
+            margin-top: 30px; /* Adiciona espaço acima da imagem */
+        }
+        .logo-container img {
+            width: 100%; /* Estende a imagem horizontalmente */
+            height: 80%; /* Reduz a imagem verticalmente em 20% */
+            display: block; /* Adiciona espaço acima e abaixo da imagem */
+            margin: 0 auto; /* Centraliza a imagem */
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <h1 class="text-center mt-5">Bem-vindo à Mori Magazine</h1>
+    <!-- Botões -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <a href="/clientes/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Clientes</a>
+        </div>
+        <div class="col-md-6">
+            <a href="/produto/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Produtos</a>
+        </div>
+    </div>
+    <div class="row justify-content-center logo-container">
+        <img src="/imagens/logoMori.jpeg" alt="Logo Mori Magazine">
+    </div>
+</div>
+</body>
+</html>

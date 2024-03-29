@@ -4,15 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.Data;
-
-
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
+@Table(name = "Produto")
 public class ProdutoEntity {
 
     @Id
@@ -25,7 +26,8 @@ public class ProdutoEntity {
     @NotNull(message = "Preço obrigatório")
     private double preco;
 
-    private Date compra;
+    @NotNull(message = "Data de compra obrigatória")
+    private LocalDate compra;
 
     // Construtor, getters e setters
 
@@ -34,7 +36,7 @@ public class ProdutoEntity {
     }
 
     // Construtor com parâmetros
-    public ProdutoEntity(Integer id, String nomeProduto, double preco, Date compra) {
+    public ProdutoEntity(Integer id, String nomeProduto, double preco, LocalDate compra) {
         this.id = id;
         this.nomeProduto = nomeProduto;
         this.preco = preco;

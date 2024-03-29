@@ -25,12 +25,31 @@ public String viewClientes(Model model) {
     model.addAttribute("listarClientes", clienteService.listarTodosClientes());
     return "index";
 }
-
-    @GetMapping("/deletar/{id}")
-    public String deletarCliente(@PathVariable(value = "id") Integer id) {
-        clienteService.deletarCliente(id);
+@GetMapping("/deletar/{id}")
+public String mostrarFormularioExclusao(@PathVariable(value = "id") Integer id, Model model) {
+    // Buscar o cliente pelo ID
+    ClienteEntity cliente = clienteService.getClienteId(id);
+    
+    // Verificar se o cliente existe
+    if (cliente == null) {
+        // Se o cliente não existir, redirecionar para a lista de clientes
         return "redirect:/clientes/listar";
     }
+    
+    // Adicionar o cliente à model
+    model.addAttribute("cliente", cliente);
+    
+    // Retornar o nome da página de confirmação de exclusão
+    return "ConfirmarExclusaoCliente";
+}
+    
+
+@PostMapping("/deletar/{id}")
+public String deletarCliente(@PathVariable(value = "id") Integer id) {
+    clienteService.deletarCliente(id);
+    return "redirect:/clientes/listar";
+}
+
 
     @GetMapping("/criarClienteForm")
     public String criarClienteForm(Model model) {
@@ -68,5 +87,10 @@ public String salvarCliente(@Valid @ModelAttribute("cliente") ClienteEntity clie
         return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
 
-
+@GetMapping("/pesquisar")
+    public String pesquisarClientePorNome(@RequestParam("termo") String termo, Model model) {
+        List<ClienteEntity> resultados = clienteService.getClientePorNome(termo);
+        model.addAttribute("resultados", resultados);
+        return "pesquisa-cliente";
+    }
 }

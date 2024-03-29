@@ -45,7 +45,7 @@ public class ClienteService {
         clienteRepository.deleteById(cliente.getId());
     }
 
-    // Outros métodos de serviço, se necessário
+    
 
     public List<ClienteEntity> getClientePorCPF(String cpf) {
    List<ClienteEntity> clientes = clienteRepository.findByCpf(cpf);

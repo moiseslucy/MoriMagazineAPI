@@ -35,7 +35,7 @@ public class SiteController {
         return new ModelAndView("redirect:/");
     }
 
-    @GetMapping("/")
+    @GetMapping("/site")
     public String index(@CookieValue(name="pref-nome", defaultValue="") String nome,
                         @CookieValue(name="pref-estilo", defaultValue="claro") String tema,
                         Model model) {
