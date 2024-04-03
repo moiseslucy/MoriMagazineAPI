@@ -32,7 +32,12 @@
     <h1>Inserir Produto</h1>
     <form th:action="@{/produto/salvarProduto}" th:object="${produto}" method="POST">
         <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
-        <input type="number" th:field="*{preco}" placeholder="Insira o preço" class="form-control mb-4 col-4">
+        <div class="input-group mb-4 col-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text">R$</span>
+            </div>
+            <input type="text" th:field="*{preco}" placeholder="Insira o preço" class="form-control">
+        </div>
         <input type="date" th:field="*{compra}" placeholder="Insira a data de compra" class="form-control mb-4 col-4">
         <button type="submit" class="btn btn-info col-2">Salvar</button>
     </form>

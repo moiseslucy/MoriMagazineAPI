@@ -5,6 +5,7 @@ import com.api.MoriMagazineAPI.service.ProdutoService;
 
 import jakarta.validation.Valid;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,43 +66,69 @@ public class ProdutoController {
         return "inserirProduto";
     }
 @PostMapping("/salvarProduto")
-public String salvarProduto(
-        @Valid @ModelAttribute("produto") ProdutoEntity produto,
-        BindingResult result) {
-
-    if (result.hasErrors()) {
-        return "inserirProduto"; // Retorna para a página de inserção de produto se houver erros de validação
-    }
-    
-    if (produto.getId() == null) {
-        produtoService.criarProduto(produto);
-    } else {
-        produtoService.atualizarProduto(produto.getId(), produto);
-    }
-
-    return "redirect:/produto/listar"; // Redireciona para a página de listagem de produtos após salvar com sucesso
-}
-
-    @GetMapping("/atualizarForm/{id}")
-    public String atualizarProdutoForm(@PathVariable(value = "id") Integer id, Model model) {
-        ProdutoEntity produto = produtoService.getProdutoId(id);
-        model.addAttribute("produto", produto);
-        return "atualizarProduto";
-    }
-
-    @PostMapping("/atualizar")
-    public String atualizarProduto(
-            @Valid @ModelAttribute("produto") ProdutoEntity produto,
+    public String salvarProduto(@Valid @ModelAttribute("produto") ProdutoEntity produto,
             BindingResult result) {
 
         if (result.hasErrors()) {
-            return "atualizarProduto";
+            return "inserirProduto"; // Retorna para a página de inserção de produto se houver erros de validação
         }
 
-        produtoService.atualizarProduto(produto.getId(), produto);
-        return "redirect:/produto/listar";
-   
+        // Converte o preço para um formato adequado antes de salvar no banco de dados
+        try {
+            String precoFormatado = produto.getPreco().replace(",", ".").replace("R$", "").trim();
+            produto.setPreco(precoFormatado);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (produto.getId() == null) {
+            produtoService.criarProduto(produto);
+        } else {
+            produtoService.atualizarProduto(produto.getId(), produto);
+        }
+
+        return "redirect:/produto/listar"; // Redireciona para a página de listagem de produtos após salvar com sucesso
     }
+
+
+   @GetMapping("/atualizarForm/{id}")
+public String atualizarProdutoForm(@PathVariable(value = "id") Integer id, Model model) {
+    ProdutoEntity produto = produtoService.getProdutoId(id);
+    model.addAttribute("produto", produto);
+    model.addAttribute("dataCompra", produto.getCompra()); // Passando a data de compra para a página
+    return "atualizarProduto";
+}
+
+
+ @PostMapping("/atualizar")
+public String atualizarProduto(
+    @Valid @ModelAttribute("produto") ProdutoEntity produto,
+    BindingResult result) {
+
+    if (result.hasErrors()) {
+        return "atualizarProduto";
+    }
+
+    // Formatando o preço para remover o "R$" antes de atualizar
+    String precoFormatado = produto.getPreco().replace("R$", "").trim();
+    produto.setPreco(precoFormatado);
+
+    // Atualizando apenas os campos que foram preenchidos
+    if (produto.getNomeProduto() != null && !produto.getNomeProduto().isEmpty()) {
+        produtoService.atualizarNomeProduto(produto.getId(), produto.getNomeProduto());
+    }
+    if (produto.getPreco() != null && !produto.getPreco().isEmpty()) {
+        produtoService.atualizarPrecoProduto(produto.getId(), produto.getPreco());
+    }
+    if (produto.getCompra() != null) {
+        produtoService.atualizarDataCompraProduto(produto.getId(), produto.getCompra());
+    }
+
+    return "redirect:/produto/listar";
+}
+
+
+
 @GetMapping("/pesquisar")
     public String pesquisarProdutoPorNome(@RequestParam("termo") String termo, Model model) {
         List<ProdutoEntity> resultados = produtoService.getProdutoPorNome(termo);

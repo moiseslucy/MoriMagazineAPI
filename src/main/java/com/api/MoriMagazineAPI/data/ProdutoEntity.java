@@ -23,8 +23,8 @@ public class ProdutoEntity {
     @NotBlank(message = "Nome do produto obrigatório")
     private String nomeProduto;
 
-    @NotNull(message = "Preço obrigatório")
-    private double preco;
+    @NotBlank(message = "Preço obrigatório")
+    private String preco; // Alterado para String para aceitar o preço formatado em reais (R$)
 
     @NotNull(message = "Data de compra obrigatória")
     private LocalDate compra;
@@ -36,10 +36,44 @@ public class ProdutoEntity {
     }
 
     // Construtor com parâmetros
-    public ProdutoEntity(Integer id, String nomeProduto, double preco, LocalDate compra) {
+    public ProdutoEntity(Integer id, String nomeProduto, String preco, LocalDate compra) {
         this.id = id;
         this.nomeProduto = nomeProduto;
         this.preco = preco;
+        this.compra = compra;
+    }
+
+    // Getters e setters
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNomeProduto() {
+        return nomeProduto;
+    }
+
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
+    }
+
+    public String getPreco() {
+        return preco;
+    }
+
+    public void setPreco(String preco) {
+        this.preco = preco;
+    }
+
+    public LocalDate getCompra() {
+        return compra;
+    }
+
+    public void setCompra(LocalDate compra) {
         this.compra = compra;
     }
 }
