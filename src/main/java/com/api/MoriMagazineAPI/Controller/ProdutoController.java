@@ -6,6 +6,7 @@ import com.api.MoriMagazineAPI.service.ProdutoService;
 import jakarta.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,16 +92,19 @@ public class ProdutoController {
     }
 
 
-   @GetMapping("/atualizarForm/{id}")
+@GetMapping("/atualizarForm/{id}")
 public String atualizarProdutoForm(@PathVariable(value = "id") Integer id, Model model) {
     ProdutoEntity produto = produtoService.getProdutoId(id);
     model.addAttribute("produto", produto);
-    model.addAttribute("dataCompra", produto.getCompra()); // Passando a data de compra para a página
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String dataFormatada = produto.getCompra().format(formatter); // Formatar a data
+    model.addAttribute("dataCompra", dataFormatada); // Passando a data formatada para a página
     return "atualizarProduto";
 }
 
 
- @PostMapping("/atualizar")
+
+@PostMapping("/atualizar")
 public String atualizarProduto(
     @Valid @ModelAttribute("produto") ProdutoEntity produto,
     BindingResult result) {
@@ -109,23 +113,26 @@ public String atualizarProduto(
         return "atualizarProduto";
     }
 
-    // Formatando o preço para remover o "R$" antes de atualizar
-    String precoFormatado = produto.getPreco().replace("R$", "").trim();
-    produto.setPreco(precoFormatado);
+    // Obter o produto atual do banco de dados
+    ProdutoEntity produtoAtual = produtoService.getProdutoId(produto.getId());
 
-    // Atualizando apenas os campos que foram preenchidos
+    // Atualizar apenas os campos que foram modificados
     if (produto.getNomeProduto() != null && !produto.getNomeProduto().isEmpty()) {
-        produtoService.atualizarNomeProduto(produto.getId(), produto.getNomeProduto());
+        produtoAtual.setNomeProduto(produto.getNomeProduto());
     }
     if (produto.getPreco() != null && !produto.getPreco().isEmpty()) {
-        produtoService.atualizarPrecoProduto(produto.getId(), produto.getPreco());
+        produtoAtual.setPreco(produto.getPreco());
     }
     if (produto.getCompra() != null) {
-        produtoService.atualizarDataCompraProduto(produto.getId(), produto.getCompra());
+        produtoAtual.setCompra(produto.getCompra());
     }
+
+    // Salvar o produto atualizado no banco de dados
+    produtoService.salvarProduto(produtoAtual);
 
     return "redirect:/produto/listar";
 }
+
 
 
 

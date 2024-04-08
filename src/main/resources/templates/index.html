@@ -7,19 +7,19 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <style>
         body {
-            background-color: #20b2aa; /* Fundo cinza claro */
+            background-color: #f8f9fa; /* Fundo cinza claro */
             color: #333; /* Texto cinza escuro */
         }
         h1 {
             color: #333; /* Cinza escuro */
         }
         .btn-primary {
-            background-color: #ffc0cb; /* Rosa claro */
-            border-color: #ffc0cb; /* Rosa claro */
+            background-color: #007bff; /* Azul principal */
+            border-color: #007bff; /* Azul principal */
         }
         .btn-primary:hover {
-            background-color: #ff69b4; /* Rosa mais escuro ao passar o mouse */
-            border-color: #ff69b4; /* Rosa mais escuro ao passar o mouse */
+            background-color: #0056b3; /* Azul mais escuro ao passar o mouse */
+            border-color: #0056b3; /* Azul mais escuro ao passar o mouse */
         }
         table {
             background-color: #f8f9fa; /* Cinza claro */
@@ -95,25 +95,25 @@
                     <td th:text="${cliente.telefone}"></td>
                     <td>
                         <div class="btn-group" role="group" aria-label="Operações">
-              <a th:href="@{/clientes/atualizarForm/{id}(id=${cliente.id})}" class="btn btn-primary">Atualizar</a>
-              <a th:href="@{/clientes/deletar/{id}(id=${cliente.id})}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Excluir</a>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                            <a th:href="@{/clientes/atualizarForm/{id}(id=${cliente.id})}" class="btn btn-primary">Atualizar</a>
+                            <a th:href="@{/clientes/deletar/{id}(id=${cliente.id})}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Excluir</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-  <div class="container my-2">
-    <!-- Botões de rodapé removidos -->
-  </div>
+    <div class="container my-2">
+        <!-- Botões de rodapé removidos -->
+    </div>
 
-  <script>
-    function confirmDelete(url) {
-      if (confirm('Tem certeza que deseja excluir este cliente?')) {
-        window.location.href = url;
-      }
-    }
-  </script>
+    <script>
+        function confirmDelete(url) {
+            if (confirm('Tem certeza que deseja excluir este cliente?')) {
+                window.location.href = url;
+            }
+        }
+    </script>
 </body>
 </html>

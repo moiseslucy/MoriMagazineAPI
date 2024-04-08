@@ -1,75 +1,82 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <title>Atualizar Produto</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <style>
-    body {
-      background-color: #20b2aa; /* Azul lesma do mar */
-      color: #333; /* Texto cinza escuro */
-    }
-    h1 {
-      color: #333; /* Cinza escuro */
-    }
-    .btn-info {
-      background-color: #ffc0cb; /* Rosa claro */
-      border-color: #ffc0cb; /* Rosa claro */
-    }
-    .btn-info:hover {
-      background-color: #ff69b4; /* Rosa mais escuro ao passar o mouse */
-      border-color: #ff69b4; /* Rosa mais escuro ao passar o mouse */
-    }
-    .form-control {
-      background-color: #f1f3f5; /* Cinza claro */
-      color: #333; /* Texto cinza escuro */
-      border-color: #ced4da; /* Cinza claro */
-    }
-    .btn-orange {
-      margin-top: 20px;
-    }
-    .btn-orange {
-      background-color: #ff6347;
-      border-color: #ff6347;
-    }
-    .btn-orange {
-      color: #fff;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>Atualizar Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Fundo cinza claro */
+            color: #333; /* Texto cinza escuro */
+        }
+        h1 {
+            color: #333; /* Cinza escuro */
+        }
+        .btn-info {
+            background-color: #007bff; /* Azul principal */
+            border-color: #007bff; /* Azul principal */
+        }
+        .btn-info:hover {
+            background-color: #0056b3; /* Azul mais escuro ao passar o mouse */
+            border-color: #0056b3; /* Azul mais escuro ao passar o mouse */
+        }
+        .form-control {
+            background-color: #fff; /* Fundo branco */
+            color: #333; /* Texto cinza escuro */
+            border-color: #ced4da; /* Cinza claro */
+        }
+        .btn-orange {
+            margin-top: 20px;
+            background-color: #ffc107; /* Amarelo */
+            border-color: #ffc107; /* Amarelo */
+            color: #333; /* Texto cinza escuro */
+        }
+        .btn-orange:hover {
+            background-color: #ff9800; /* Laranja mais escuro ao passar o mouse */
+            border-color: #ff9800; /* Laranja mais escuro ao passar o mouse */
+            color: #fff; /* Texto branco */
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-     <h1>Atualizar Produto (apenas campos preenchidos)</h1>
-   <form th:action="@{/produto/atualizar}" th:object="${produto}" method="POST">
-    <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
-    <input type="text" th:field="*{preco}" placeholder="Insira o preço (R$)" class="form-control mb-4 col-4">
-    <div class="mb-4 col-4">
-        <p>Data de Compra Atual: <span th:text="${dataCompra}"></span></p> <!-- Exibindo a data de compra atual -->
-        <label>Deseja mudar a data?</label>
-        <input type="checkbox" id="mudarDataCheckbox" onchange="toggleDataField()" class="ml-2">
-    </div>
-    <input type="date" th:field="*{compra}" id="dataInput" class="form-control mb-4 col-4" style="display: none"> <!-- Campo de entrada para edição da data, inicialmente oculto -->
-    <input type="hidden" th:field="*{id}" />
-    <button type="submit" class="btn btn-info col-2">Atualizar</button>
-</form>
+<div class="container">
+    <h1>Atualizar Produto</h1>
+    <form th:action="@{/produto/atualizar}" th:object="${produto}" method="POST">
+        <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
+        <input type="text" th:field="*{preco}" placeholder="Insira o preço (R$)" class="form-control mb-4 col-4">
+        <div class="mb-4 col-4">
+            <p>Data de Compra Atual: <span th:text="${dataCompra}"></span></p> <!-- Exibindo a data de compra atual -->
 
-<script>
-    function toggleDataField() {
-        var dataInput = document.getElementById("dataInput");
-        var mudarDataCheckbox = document.getElementById("mudarDataCheckbox");
 
-        if (mudarDataCheckbox.checked) {
-            dataInput.style.display = "block"; // Mostrar o campo de edição da data quando o checkbox estiver marcado
-        } else {
-            dataInput.style.display = "none"; // Ocultar o campo de edição da data quando o checkbox estiver desmarcado
+            <label>Deseja mudar a data?</label>
+            <input type="checkbox" id="mudarDataCheckbox" onchange="toggleDataField()" class="ml-2">
+        </div>
+        <input type="date" th:field="*{compra}" id="dataInput" class="form-control mb-4 col-4" style="display: none"> <!-- Campo de entrada para edição da data, inicialmente oculto -->
+        <input type="hidden" id="dataHidden" th:field="*{compra}" />
+        <input type="hidden" th:field="*{id}" />
+        <button type="submit" class="btn btn-info col-2">Atualizar</button>
+    </form>
+
+    <script>
+        function toggleDataField() {
+            var dataInput = document.getElementById("dataInput");
+            var mudarDataCheckbox = document.getElementById("mudarDataCheckbox");
+            var dataHidden = document.getElementById("dataHidden");
+
+            if (mudarDataCheckbox.checked) {
+                dataInput.style.display = "block"; // Mostrar o campo de edição da data quando o checkbox estiver marcado
+                // Atualizar o valor do campo oculto com a data formatada corretamente
+                var dataFormatada = dataInput.value.split('-').reverse().join('-'); // Formatar a data para o formato yyyy-MM-dd
+                dataHidden.value = dataFormatada;
+            } else {
+                dataInput.style.display = "none"; // Ocultar o campo de edição da data quando o checkbox estiver desmarcado
+            }
         }
-    }
-</script>
-
+    </script>
 
 
     <a href="/produto/listar" class="btn btn-orange btn-block text-white">Voltar para Lista de Produtos</a>
 
-  </div>
+</div>
 </body>
 </html>
