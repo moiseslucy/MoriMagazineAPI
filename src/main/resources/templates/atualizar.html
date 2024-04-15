@@ -43,6 +43,7 @@
 <div class="container">
     <h1>Atualizar Cliente</h1>
     <form th:action="@{/clientes/salvarCliente}"  th:object="${cliente}" method="POST">
+        
         <div class="form-group">
             <label for="nome">Nome:</label>
             <small id="mensagemNome" class="form-text text-muted">Deseja mudar o nome?</small>

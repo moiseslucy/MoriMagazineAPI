@@ -42,28 +42,37 @@
 <body>
 <div class="container">
     <h1>Atualizar Produto</h1>
-    <form th:action="@{/produto/atualizar}" th:object="${produto}" method="POST">
+       <form th:action="@{/produto/salvarProduto}" th:object="${produto}" method="POST">
         <div class="form-group">
             <label for="nomeProduto">Nome do Produto:</label>
             <small id="mensagemNomeProduto" class="form-text text-muted">Deseja mudar o nome do produto?</small>
             <input type="text" id="nomeProduto" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
         </div>
         <div class="form-group">
-            <label for="preco">Preço (R$):</label>
+            <label for="preco">Preço:</label>
             <small id="mensagemPreco" class="form-text text-muted">Deseja mudar o preço?</small>
-            <input type="text" id="preco" th:field="*{preco}" placeholder="Insira o preço (R$)" class="form-control mb-4 col-4">
+            <input type="text" id="preco" th:field="*{preco}" placeholder="Insira o preço" class="form-control mb-4 col-4">
         </div>
         <div class="form-group">
-            <label for="dataCompra">Data de Compra:</label>
-            <small id="mensagemData" class="form-text text-muted">Deseja mudar a data?</small>
-            <input type="text" id="dataCompra" th:field="*{Compra}" class="form-control mb-4 col-4" readonly>
+            <label for="dataCompra">Data da Compra:</label>
+            <small id="mensagemDataCompra" class="form-text text-muted">Deseja mudar a data da compra?</small>
+            <input type="text" id="dataCompra" th:field="*{dataCompra}" placeholder="Insira a data da compra" class="form-control mb-4 col-4">
+        </div>
+        <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <small id="mensagemDescricao" class="form-text text-muted">Deseja mudar a descrição?</small>
+            <input type="text" id="descricao" th:field="*{descricao}" placeholder="Insira a descrição" class="form-control mb-4 col-4">
+        </div>
+        <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+            <small id="mensagemQuantidade" class="form-text text-muted">Deseja mudar a quantidade?</small>
+            <input type="text" id="quantidade" th:field="*{quantidade}" placeholder="Insira a quantidade" class="form-control mb-4 col-4">
         </div>
         <input type="hidden" th:field="*{id}" />
         <button type="submit" class="btn btn-info col-2">Atualizar</button>
     </form>
-
+    
     <a href="/produto/listar" class="btn btn-orange btn-block text-white">Voltar para Lista de Produtos</a>
-
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Inserir Produto</title>
@@ -31,14 +31,25 @@
 <div class="container">
     <h1>Inserir Produto</h1>
     <form th:action="@{/produto/salvarProduto}" th:object="${produto}" method="POST">
+        
         <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
+        
         <div class="input-group mb-4 col-4">
             <div class="input-group-prepend">
                 <span class="input-group-text">R$</span>
             </div>
             <input type="text" th:field="*{preco}" placeholder="Insira o preço" class="form-control">
         </div>
-        <input type="date" th:field="*{compra}" placeholder="Insira a data de compra" class="form-control mb-4 col-4">
+        
+        <input type="date" th:field="*{dataCompra}" placeholder="Insira a data de compra" class="form-control mb-4 col-4">
+
+        <input type="text" th:field="*{descricao}" placeholder="Insira a descrição do produto" class="form-control mb-4 col-4">
+        
+        <div class="form-group mb-4 col-4">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" th:field="*{quantidade}" placeholder="Insira a quantidade disponível" class="form-control">
+        </div>
+        
         <button type="submit" class="btn btn-info col-2">Salvar</button>
     </form>
     <a th:href="@{/produto/listar}">Retornar para a Lista de Produtos</a>

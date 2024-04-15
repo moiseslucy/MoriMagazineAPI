@@ -26,21 +26,29 @@ public class ProdutoEntity {
     @NotBlank(message = "Preço obrigatório")
     private String preco; // Alterado para String para aceitar o preço formatado em reais (R$)
 
-    @NotNull(message = "Data de compra obrigatória")
-    private LocalDate compra;
+    @NotNull(message = "Data da compra obrigatória")
+    private LocalDate dataCompra; // Renomeado de 'compra' para 'dataCompra'
 
-    // Construtor, getters e setters
+    @NotBlank(message = "Descrição obrigatória")
+    private String descricao; // Descrição do produto
+
+    @NotNull(message = "Quantidade de produtos obrigatória")
+    private Integer quantidade; // Quantidade de produtos disponíveis
+
+    // Construtores padrão e com parâmetros, getters e setters
 
     public ProdutoEntity() {
         // Construtor vazio necessário para JPA
     }
 
     // Construtor com parâmetros
-    public ProdutoEntity(Integer id, String nomeProduto, String preco, LocalDate compra) {
+    public ProdutoEntity(Integer id, String nomeProduto, String preco, LocalDate dataCompra, String descricao, Integer quantidade) {
         this.id = id;
         this.nomeProduto = nomeProduto;
         this.preco = preco;
-        this.compra = compra;
+        this.dataCompra = dataCompra;
+        this.descricao = descricao;
+        this.quantidade = quantidade;
     }
 
     // Getters e setters
@@ -69,11 +77,27 @@ public class ProdutoEntity {
         this.preco = preco;
     }
 
-    public LocalDate getCompra() {
-        return compra;
+    public LocalDate getDataCompra() {
+        return dataCompra;
     }
 
-    public void setCompra(LocalDate compra) {
-        this.compra = compra;
+    public void setDataCompra(LocalDate dataCompra) {
+        this.dataCompra = dataCompra;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
     }
 }

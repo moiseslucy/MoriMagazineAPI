@@ -26,11 +26,22 @@ public String viewClientes(Model model) {
     return "index";
 }
 
-    @GetMapping("/deletar/{id}")
-    public String deletarCliente(@PathVariable(value = "id") Integer id) {
-        clienteService.deletarCliente(id);
+   @GetMapping("/deletar/{id}")
+public String mostrarFormularioExclusaoCliente(@PathVariable(value = "id") Integer id, Model model) {
+    ClienteEntity cliente = clienteService.getClienteId(id);
+    if (cliente == null) {
         return "redirect:/clientes/listar";
     }
+    model.addAttribute("cliente", cliente);
+    return "ConfirmarExclusaoCliente";
+}
+
+@PostMapping("/deletar/{id}")
+public String deletarCliente(@PathVariable(value = "id") Integer id) {
+    clienteService.deletarCliente(id);
+    return "redirect:/clientes/listar";
+}
+
 
     @GetMapping("/criarClienteForm")
     public String criarClienteForm(Model model) {

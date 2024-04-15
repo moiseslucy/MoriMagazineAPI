@@ -84,19 +84,21 @@
     <table class="table table-striped table-responsive-md">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Nome</th>
+            <th>Nome do Produto</th>
             <th>Preço</th>
             <th>Data de Compra</th>
+            <th>Quantidade Disponível</th>
+            <th>Descrição</th>
             <th>Operações</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="produto : ${listarProdutos}">
-            <td th:text="${produto.id}"></td>
             <td th:text="${produto.nomeProduto}"></td>
             <td th:text="${produto.preco}"></td>
-            <td th:text="${produto.compra}"></td>
+          <td th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></td>
+            <td th:text="${produto.quantidade}"></td>
+            <td th:text="${produto.descricao}"></td>
             <td>
                 <div class="btn-group" role="group" aria-label="Operações">
                     <a th:href="@{/produto/atualizarForm/{id}(id=${produto.id})}" class="btn btn-primary">Atualizar</a>
