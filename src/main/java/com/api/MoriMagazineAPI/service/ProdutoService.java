@@ -23,7 +23,15 @@ public class ProdutoService {
         produtoRepository.save(produto);
         return produto;
     }
-
+public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
+    for (ProdutoEntity produto : produtos) {
+        produto.setId(null); // Resetando o ID para garantir que um novo ID seja atribuído pelo banco de dados
+    }
+    List<ProdutoEntity> produtosSalvos = produtoRepository.saveAll(produtos);
+    return produtosSalvos;
+}
+    
+    
     public ProdutoEntity atualizarProduto(Integer produtoId, ProdutoEntity produtoRequest) {
         ProdutoEntity produto = getProdutoId(produtoId);
         if (produtoRequest.getNomeProduto() != null && !produtoRequest.getNomeProduto().isEmpty()) {

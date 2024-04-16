@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/morimagazine/api/clientes")
-public class ClienteController {
+@RequestMapping("/cliente/api")
+public class ClienteControllerPostmanAPI {
 
     @Autowired
     ClienteService clienteService;
@@ -40,6 +40,12 @@ public class ClienteController {
         var novoCliente = clienteService.criarCliente(cliente);
         return new ResponseEntity<>(novoCliente, HttpStatus.CREATED);
     }
+
+    @PostMapping("/adicionar-lote")
+public ResponseEntity<List<ClienteEntity>> addClientes(@Valid @RequestBody List<ClienteEntity> clientes) {
+    List<ClienteEntity> novosClientes = clienteService.criarClientes(clientes);
+    return ResponseEntity.status(HttpStatus.CREATED).body(novosClientes);
+}
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<ClienteEntity> atualizarCliente(@PathVariable Integer id, @RequestBody ClienteEntity cliente) {

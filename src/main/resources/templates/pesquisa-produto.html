@@ -73,6 +73,8 @@
             <th>Nome do Produto</th>
             <th>Preço</th>
             <th>Data de Compra</th>
+            <th>Descrição</th> <!-- Adicionado o cabeçalho para a descrição -->
+            <th>Quantidade</th>
             <th>Operações</th>
         </tr>
         </thead>
@@ -81,7 +83,9 @@
             <td th:text="${produto.id}"></td>
             <td th:text="${produto.nomeProduto}"></td>
             <td th:text="${produto.preco}"></td>
-            <td th:text="${produto.compra}"></td>
+            <td th:text="${produto.dataCompra}"></td>
+            <td th:text="${produto.descricao}"></td> <!-- Adicionado a coluna para a descrição -->
+            <td th:text="${produto.quantidade}"></td>
             <td>
                 <div class="btn-group" role="group" aria-label="Operações">
                     <a th:href="@{/produto/atualizarForm/{id}(id=${produto.id})}" class="btn btn-primary">Atualizar</a>

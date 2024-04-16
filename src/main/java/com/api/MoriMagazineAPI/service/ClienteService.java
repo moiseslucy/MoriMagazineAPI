@@ -45,7 +45,13 @@ public class ClienteService {
         clienteRepository.deleteById(cliente.getId());
     }
 
-    
+    public List<ClienteEntity> criarClientes(List<ClienteEntity> clientes) {
+    for (ClienteEntity cliente : clientes) {
+        cliente.setId(null); // Resetando o ID para garantir que um novo ID seja atribuído pelo banco de dados
+    }
+    return clienteRepository.saveAll(clientes);
+}
+
 
     public List<ClienteEntity> getClientePorCPF(String cpf) {
    List<ClienteEntity> clientes = clienteRepository.findByCpf(cpf);

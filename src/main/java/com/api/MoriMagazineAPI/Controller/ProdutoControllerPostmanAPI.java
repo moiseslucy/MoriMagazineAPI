@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/produto/api")
-public class ProdController {
+public class ProdutoControllerPostmanAPI {
 
     @Autowired
     ProdutoService produtoService;
@@ -39,6 +39,12 @@ public class ProdController {
     public ResponseEntity<ProdutoEntity> addProduto(@Valid @RequestBody ProdutoEntity produto) {
         var novoProduto = produtoService.criarProduto(produto);
         return new ResponseEntity<>(novoProduto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/adicionar-lote")
+    public ResponseEntity<List<ProdutoEntity>> addProdutos(@Valid @RequestBody List<ProdutoEntity> produtos) {
+        List<ProdutoEntity> novosProdutos = produtoService.criarProdutos(produtos);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novosProdutos);
     }
 
     @PutMapping("/atualizar/{id}")
