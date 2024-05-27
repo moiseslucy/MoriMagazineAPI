@@ -4,40 +4,43 @@ import com.api.MoriMagazineAPI.data.ProdutoEntity;
 import com.api.MoriMagazineAPI.data.ProdutoRepository;
 import com.api.MoriMagazineAPI.exeception.ResourceNotFoundException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
 
+    @Autowired
     public ProdutoService(ProdutoRepository produtoRepository) {
         this.produtoRepository = produtoRepository;
     }
 
+    public List<ProdutoEntity> getProdutosByIds(List<Long> produtoIds) {
+        return produtoRepository.findAllById(produtoIds);
+    }
+
     public ProdutoEntity criarProduto(ProdutoEntity produto) {
         produto.setId(null);
-        produtoRepository.save(produto);
-        return produto;
+        return produtoRepository.save(produto);
     }
-public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
-    for (ProdutoEntity produto : produtos) {
-        produto.setId(null); // Resetando o ID para garantir que um novo ID seja atribuído pelo banco de dados
+
+    public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
+        produtos.forEach(produto -> produto.setId(null));
+        return produtoRepository.saveAll(produtos);
     }
-    List<ProdutoEntity> produtosSalvos = produtoRepository.saveAll(produtos);
-    return produtosSalvos;
-}
-    
-    
-    public ProdutoEntity atualizarProduto(Integer produtoId, ProdutoEntity produtoRequest) {
+
+    public ProdutoEntity atualizarProduto(Long produtoId, ProdutoEntity produtoRequest) {
         ProdutoEntity produto = getProdutoId(produtoId);
         if (produtoRequest.getNomeProduto() != null && !produtoRequest.getNomeProduto().isEmpty()) {
             produto.setNomeProduto(produtoRequest.getNomeProduto());
         }
-        if (produtoRequest.getPreco() != null && !produtoRequest.getPreco().isEmpty()) {
+        if (produtoRequest.getPreco() != null) {
             produto.setPreco(produtoRequest.getPreco());
         }
         if (produtoRequest.getDataCompra() != null) {
@@ -46,11 +49,10 @@ public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
         if (produtoRequest.getQuantidade() != null) {
             produto.setQuantidade(produtoRequest.getQuantidade());
         }
-        produtoRepository.save(produto);
-        return produto;
+        return produtoRepository.save(produto);
     }
 
-    public ProdutoEntity getProdutoId(Integer produtoId) {
+    public ProdutoEntity getProdutoId(Long produtoId) {
         return produtoRepository.findById(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado " + produtoId));
     }
@@ -59,9 +61,9 @@ public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
         return produtoRepository.findAll();
     }
 
-    public void deletarProduto(Integer produtoId) {
+    public void deletarProduto(Long produtoId) {
         ProdutoEntity produto = getProdutoId(produtoId);
-        produtoRepository.deleteById(produto.getId());
+        produtoRepository.delete(produto);
     }
 
     public List<ProdutoEntity> getProdutoPorNome(String nomeProduto) {
@@ -72,28 +74,31 @@ public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
         return produtoRepository.save(produto);
     }
 
-    public void atualizarNomeProduto(Integer id, String nomeProduto) {
+    public void atualizarNomeProduto(Long id, String nomeProduto) {
         ProdutoEntity produto = getProdutoId(id);
         produto.setNomeProduto(nomeProduto);
         produtoRepository.save(produto);
     }
 
-    public void atualizarPrecoProduto(Integer id, String preco) {
-        String precoFormatado = preco.replace("R$", "").trim();
+    public void atualizarPrecoProduto(Long id, BigDecimal preco) {
         ProdutoEntity produto = getProdutoId(id);
-        produto.setPreco(precoFormatado);
+        produto.setPreco(preco);
         produtoRepository.save(produto);
     }
 
-    public void atualizarDataCompraProduto(Integer id, LocalDate dataCompra) {
+    public void atualizarDataCompraProduto(Long id, LocalDate dataCompra) {
         ProdutoEntity produto = getProdutoId(id);
         produto.setDataCompra(dataCompra);
         produtoRepository.save(produto);
     }
 
-    public void atualizarQuantidadeProduto(Integer id, Integer quantidade) {
+    public void atualizarQuantidadeProduto(Long id, Integer quantidade) {
         ProdutoEntity produto = getProdutoId(id);
         produto.setQuantidade(quantidade);
         produtoRepository.save(produto);
+    }
+
+    public List<ProdutoEntity> listarProdutos() {
+        return produtoRepository.findAll();
     }
 }

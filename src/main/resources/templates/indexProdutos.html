@@ -96,7 +96,8 @@
         <tr th:each="produto : ${listarProdutos}">
             <td th:text="${produto.nomeProduto}"></td>
             <td th:text="${produto.preco}"></td>
-          <td th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></td>
+              <td th:text="${produto.dataCompra}"></td>
+        
             <td th:text="${produto.quantidade}"></td>
             <td th:text="${produto.descricao}"></td>
             <td>

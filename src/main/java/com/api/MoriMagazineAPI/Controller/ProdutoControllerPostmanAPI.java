@@ -24,7 +24,7 @@ public class ProdutoControllerPostmanAPI {
     }
 
     @GetMapping("/pesquisar/{id}")
-    public ResponseEntity<ProdutoEntity> getProdutoById(@PathVariable Integer id) {
+    public ResponseEntity<ProdutoEntity> getProdutoById(@PathVariable Long id) {
         ProdutoEntity produto = produtoService.getProdutoId(id);
         return new ResponseEntity<>(produto, HttpStatus.OK);
     }
@@ -48,13 +48,13 @@ public class ProdutoControllerPostmanAPI {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<ProdutoEntity> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoEntity produto) {
+    public ResponseEntity<ProdutoEntity> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoEntity produto) {
         var produtoAtualizado = produtoService.atualizarProduto(id, produto);
         return new ResponseEntity<>(produtoAtualizado, HttpStatus.OK);
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity deletarProduto(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
         produtoService.deletarProduto(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

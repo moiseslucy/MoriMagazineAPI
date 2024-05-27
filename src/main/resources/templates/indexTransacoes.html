@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Transações</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/clientes/listar}">Lista de Clientes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/produto/listar}">Lista de Produtos</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/transacao/listar}">Lista de Transações</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/transacao/criarForm}">Criar Nova Transação</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/transacao/filtrar-por-mes}">Filtrar Transações por Mês</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h1 class="text-center">Lista de Transações</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID da Transação</th>
+            <th>Cliente</th>
+            <th>Produtos</th>
+            <th>Quantidade</th>
+            <th>Valor Total</th>
+            <th>Data da Transação</th>
+            <th>Status</th>
+            <th>Forma de Pagamento</th>
+            <th>Número do Cartão</th>
+            <th>Número de Parcelas</th>
+            <th>Valor Pago</th>
+            <th>Data do Pagamento</th>
+            <th>Valor da Parcela</th>
+            <th>Data de Vencimento</th>
+            <th>Chave Pix</th>
+            <th>Operações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="transacao : ${transacoes}">
+            <td th:text="${transacao.id}"></td>
+            <td th:text="${transacao.cliente.nome}"></td>
+            <td>
+                <ul>
+                    <li th:each="produto : ${transacao.produtos}"
+                        th:text="${produto.nomeProduto} + ' - ' + ${produto.quantidade}"></li>
+                </ul>
+            </td>
+            <td th:text="${transacao.quantidade}"></td>
+            <td th:text="${transacao.valorTotal}"></td>
+            <td th:text="${transacao.dataTransacao}"></td>
+            <td th:text="${transacao.status}"></td>
+            <td th:text="${transacao.formaPagamento}"></td>
+            <td th:text="${transacao.numeroCartao}"></td>
+            <td th:text="${transacao.numeroParcelas}"></td>
+            <td th:text="${transacao.valorPago}"></td>
+            <td th:text="${transacao.dataPagamento}"></td>
+            <td th:text="${transacao.valorParcela}"></td>
+            <td th:text="${transacao.dataVencimento}"></td>
+            <td th:text="${transacao.chavePix}"></td>
+            <td>
+                <a th:href="@{/transacao/editar/{id}(id=${transacao.id})}" class="btn btn-sm btn-secondary">Editar</a>
+                <a th:href="@{/transacao/deletar/{id}(id=${transacao.id})}" class="btn btn-sm btn-danger">Deletar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-nbhdlK8JfE1fKv3ERvToo3l76eIUhW+wtZ1y35P3hJ0="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-pzjw8f+VWUusEeL3+XqzvbpoISrYVn7fY3lO2+pck/YB1W0iFqn6qvuL2l+P8gJh"
+        crossorigin="anonymous"></script>
+</body>
+</html>

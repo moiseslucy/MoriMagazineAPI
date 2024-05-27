@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/clientes")
-public class CliController {
+public class ClienteControllerWeb {
 
     @Autowired
     ClienteService clienteService;

@@ -7,9 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 @Entity
@@ -18,31 +18,25 @@ public class ProdutoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;  // ID agora é do tipo Long
 
     @NotBlank(message = "Nome do produto obrigatório")
     private String nomeProduto;
 
-    @NotBlank(message = "Preço obrigatório")
-    private String preco; // Alterado para String para aceitar o preço formatado em reais (R$)
+    @NotNull(message = "Preço obrigatório")
+    private BigDecimal preco;
 
     @NotNull(message = "Data da compra obrigatória")
-    private LocalDate dataCompra; // Renomeado de 'compra' para 'dataCompra'
+    private LocalDate dataCompra;
 
     @NotBlank(message = "Descrição obrigatória")
-    private String descricao; // Descrição do produto
+    private String descricao;
 
     @NotNull(message = "Quantidade de produtos obrigatória")
-    private Integer quantidade; // Quantidade de produtos disponíveis
-
-    // Construtores padrão e com parâmetros, getters e setters
-
-    public ProdutoEntity() {
-        // Construtor vazio necessário para JPA
-    }
+    private Integer quantidade;
 
     // Construtor com parâmetros
-    public ProdutoEntity(Integer id, String nomeProduto, String preco, LocalDate dataCompra, String descricao, Integer quantidade) {
+    public ProdutoEntity(Long id, String nomeProduto, BigDecimal preco, LocalDate dataCompra, String descricao, Integer quantidade) {
         this.id = id;
         this.nomeProduto = nomeProduto;
         this.preco = preco;
@@ -51,53 +45,7 @@ public class ProdutoEntity {
         this.quantidade = quantidade;
     }
 
-    // Getters e setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNomeProduto() {
-        return nomeProduto;
-    }
-
-    public void setNomeProduto(String nomeProduto) {
-        this.nomeProduto = nomeProduto;
-    }
-
-    public String getPreco() {
-        return preco;
-    }
-
-    public void setPreco(String preco) {
-        this.preco = preco;
-    }
-
-    public LocalDate getDataCompra() {
-        return dataCompra;
-    }
-
-    public void setDataCompra(LocalDate dataCompra) {
-        this.dataCompra = dataCompra;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
+    // Construtor padrão (necessário para JPA)
+    public ProdutoEntity() {
     }
 }

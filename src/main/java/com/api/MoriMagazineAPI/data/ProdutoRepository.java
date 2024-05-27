@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProdutoRepository extends JpaRepository<ProdutoEntity, Integer> {
+public interface ProdutoRepository extends JpaRepository<ProdutoEntity, Long> {
 
     ProdutoEntity findByNomeProduto(String nomeProduto);
 
     List<ProdutoEntity> findByNomeProdutoContaining(String nomeProduto);
 
-    // Outros métodos de consulta, se necessário
+    List<ProdutoEntity> findAllByIdIn(List<Long> produtoIds);
 }
