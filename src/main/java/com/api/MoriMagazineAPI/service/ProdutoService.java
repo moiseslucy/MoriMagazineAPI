@@ -101,4 +101,8 @@ public class ProdutoService {
     public List<ProdutoEntity> listarProdutos() {
         return produtoRepository.findAll();
     }
+public List<ProdutoEntity> listarProdutosPorIds(List<Long> ids) {
+    return produtoRepository.findAllById(ids);
+}
+
 }

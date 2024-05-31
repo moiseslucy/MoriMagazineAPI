@@ -17,7 +17,7 @@ import lombok.Data;
 public class ProdutoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Correção: deve ser GenerationType.IDENTITY para auto-incremento
     private Long id;  // ID agora é do tipo Long
 
     @NotBlank(message = "Nome do produto obrigatório")

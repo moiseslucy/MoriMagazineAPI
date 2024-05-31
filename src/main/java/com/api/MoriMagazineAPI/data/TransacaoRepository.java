@@ -16,8 +16,9 @@ public interface TransacaoRepository extends JpaRepository<TransacaoEntity, Long
     @Query("SELECT t FROM TransacaoEntity t WHERE FUNCTION('MONTH', t.dataTransacao) = :mes")
     List<TransacaoEntity> findByDataTransacaoMonth(@Param("mes") int mes);
 
-    // Método para buscar transações pelo ID do produto (corrigido)
-    @Query("SELECT t FROM TransacaoEntity t WHERE :produtoId MEMBER OF t.produtosIds") 
+    @Query("SELECT t FROM TransacaoEntity t WHERE FUNCTION('MONTH', t.dataTransacao) = :mes AND FUNCTION('YEAR', t.dataTransacao) = :ano")
+    List<TransacaoEntity> findByDataTransacaoMonthAndYear(@Param("mes") int mes, @Param("ano") int ano);
+
+    @Query("SELECT t FROM TransacaoEntity t WHERE :produtoId MEMBER OF t.produtosIds")
     List<TransacaoEntity> findByProdutosIdsContaining(@Param("produtoId") Long produtoId);
 }
-
