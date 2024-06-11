@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pesquisa de Clientes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #20b2aa; /* Azul lesma do mar */
+            color: #fff; /* Texto branco */
+            padding-top: 50px;
+        }
+        h1 {
+            color: #ff4500; /* Laranja */
+        }
+        label {
+            color: #fff; /* Texto branco */
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 300px;
+        }
+        button[type="submit"] {
+            background-color: #ff6347; /* Vermelho coral */
+            border-color: #ff6347; /* Vermelho coral */
+            color: #fff; /* Texto branco */
+            margin-top: 10px;
+        }
+        table {
+            background-color: #212529; /* Cinza escuro */
+            color: #fff; /* Texto branco */
+            margin-top: 20px;
+        }
+        table th {
+            background-color: #ff4500; /* Laranja */
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #343a40; /* Cinza mais escuro */
+        }
+        table tbody tr:nth-child(odd) {
+            background-color: #495057; /* Cinza menos escuro */
+        }
+        a.btn {
+            margin-top: 20px;
+        }
+        .btn-orange {
+            background-color: #ff4500; /* Laranja */
+            border-color: #ff4500; /* Laranja */
+        }
+        .btn-orange:hover {
+            background-color: #ff6347; /* Vermelho coral ao passar o mouse */
+            border-color: #ff6347; /* Vermelho coral ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" th:href="@{/produto/listar}">Gerenciamento de Produtos</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/clientes/listar}">Lista de Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/produto/listar}">Lista de Produtos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <h1 class="text-center">Pesquisa de Clientes</h1>
+        <form class="form-inline justify-content-center" action="/clientes/pesquisar" method="get">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="termo" class="mr-2">Pesquisar por nome:</label>
+                <input type="text" class="form-control" id="termo" name="termo" required>
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+        </form>
+        <hr>
+        <h2 class="text-center">Resultados da Pesquisa</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Endereço</th>
+                        <th>CPF</th>
+                        <th>Data de Nascimento</th>
+                        <th>Sexo</th>
+                        <th>Telefone</th>
+                        <!-- Adicione mais colunas conforme necessário -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cliente : ${resultados}">
+                        <td th:text="${cliente.id}"></td>
+                        <td th:text="${cliente.nome}"></td>
+                        <td th:text="${cliente.endereco}"></td>
+                        <td th:text="${cliente.cpf}"></td>
+                        <td th:text="${cliente.dataNascimento}"></td>
+                        <td th:text="${cliente.sexo}"></td>
+                        <td th:text="${cliente.telefone}"></td>
+                        <!-- Adicione mais células conforme necessário -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+   <a href="/clientes/listar" class="btn btn-orange btn-block text-white">Voltar para Lista de Clientes</a>
+
+</body>
+</html>

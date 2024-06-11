@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Página Inicial - Mori Magazine</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+   <style>
+    body {
+        background-color: #28527a; /* Azul marinho */
+    }
+    h1 {
+        color: #f1f1f1; /* Quase branco para alto contraste */
+    }
+    .btn-primary {
+        background-color: #ff7b54; /* Coral vibrante */
+        border-color: #ff7b54; /* Coral vibrante */
+    }
+    .btn-primary:hover {
+        background-color: #ff616d; /* Rosa choque */
+        border-color: #ff616d; /* Rosa choque */
+    }
+    .container {
+        padding-bottom: 50px; /* Mantém o espaço abaixo dos botões */
+    }
+    .logo-container {
+        margin-top: 30px; /* Mantém o espaço acima da imagem */
+    }
+    .logo-container img {
+        width: 100%; /* Mantém a imagem estendida horizontalmente */
+        height: auto; /* Ajusta a altura automaticamente para manter a proporção */
+        display: block; /* Mantém o espaço acima e abaixo da imagem */
+        margin: 0 auto; /* Mantém a imagem centralizada */
+    }
+</style>
+
+</head>
+<body>
+<div class="container my-5">
+    <h1 class="text-center mt-5">Bem-vindo à Mori Magazine</h1>
+    <!-- Botões -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <a href="/clientes/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Clientes</a>
+        </div>
+        <div class="col-md-6">
+            <a href="/produto/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Produtos</a>
+        </div>
+    </div>
+    <div class="row justify-content-center logo-container">
+        <img src="/imagens/logoMori.jpeg" alt="Logo Mori Magazine">
+    </div>
+
+    <!-- Botão para Lista de Transações -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <a href="/transacao/listar" class="btn btn-primary btn-lg btn-block">Lista de Transações</a>
+        </div>
+    </div>
+
+    <!-- Botão para Registro de Venda -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <a href="/transacao/criarForm" class="btn btn-primary btn-lg btn-block">Registrar Venda</a>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
