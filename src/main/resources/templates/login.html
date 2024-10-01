@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Mori Magazine</title>
+
+    <!-- Incluir Bootstrap para estilização -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fontes Elegantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos customizados -->
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .container {
+            max-width: 500px;
+            background-color: #111;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-label {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        .form-control {
+            background-color: #222;
+            border: 1px solid #444;
+            color: white;
+        }
+        .form-control:focus {
+            background-color: #333;
+            color: white;
+            border-color: #d4af37;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background-color: #d4af37;
+            border-color: #d4af37;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #b8860b;
+            border-color: #b8860b;
+        }
+        .btn-secondary {
+            background-color: #444;
+            border-color: #444;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+            border-color: #555;
+        }
+        .alert-danger {
+            background-color: #b30000;
+            color: white;
+            border: none;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Entrar</h2>
+        <form th:action="@{/login}" method="post">
+            <!-- Mensagem de erro -->
+            <div th:if="${param.error}" class="alert alert-danger">
+                Usuário ou senha inválida.
+            </div>
+
+            <!-- Campo para usuário -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuário:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+
+            <!-- Campo para senha -->
+            <div class="mb-3 password-wrapper">
+                <label for="password" class="form-label">Senha:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility()">
+                    <img src="https://cdn-icons-png.flaticon.com/512/709/709612.png" alt="Mostrar Senha" width="20">
+                </span>
+            </div>
+
+            <!-- Link para recuperação de senha -->
+            <div class="mb-3 text-center">
+                <a href="/forgot-password" class="btn btn-link" style="color: #d4af37;">Esqueci a Senha</a>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <a href="/" class="btn btn-secondary">Voltar para a Página Inicial</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Incluir scripts do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para alternar a visibilidade da senha -->
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const passwordIcon = document.querySelector('.toggle-password img');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordIcon.src = 'https://cdn-icons-png.flaticon.com/512/709/709612.png'; // Ícone para "mostrar senha"
+            } else {
+                passwordField.type = 'password';
+                passwordIcon.src = 'https://cdn-icons-png.flaticon.com/512/709/709612.png'; // Ícone para "ocultar senha"
+            }
+        }
+    </script>
+</body>
+</html>

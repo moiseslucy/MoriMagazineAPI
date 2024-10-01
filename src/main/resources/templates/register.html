@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar-se - Mori Magazine</title>
+
+    <!-- Incluir Bootstrap para estilização -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fontes Elegantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos customizados -->
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .container {
+            max-width: 500px;
+            background-color: #111;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-label {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        .form-control {
+            background-color: #222;
+            border: 1px solid #444;
+            color: white;
+        }
+        .form-control:focus {
+            background-color: #333;
+            color: white;
+            border-color: #d4af37;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background-color: #d4af37;
+            border-color: #d4af37;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #b8860b;
+            border-color: #b8860b;
+        }
+        .btn-secondary {
+            background-color: #444;
+            border-color: #444;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+            border-color: #555;
+        }
+        .alert-danger {
+            background-color: #b30000;
+            color: white;
+            border: none;
+        }
+        .password-strength {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .password-strength span {
+            display: block;
+            font-weight: bold;
+            color: #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Registrar-se</h2>
+        <form th:action="@{/register}" th:object="${user}" method="post" onsubmit="return validateForm()">
+            <!-- Mensagem de erro -->
+            <div th:if="${errorMessage != null}" class="alert alert-danger">
+                <p th:text="${errorMessage}"></p>
+            </div>
+
+            <!-- Campo para usuário -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuário:</label>
+                <input type="text" id="username" th:field="*{username}" class="form-control" required minlength="4" maxlength="20" aria-label="Nome de usuário">
+            </div>
+
+            <!-- Campo para email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" id="email" th:field="*{email}" class="form-control" required aria-label="Endereço de email">
+            </div>
+
+            <!-- Campo para confirmação de email -->
+            <div class="mb-3">
+                <label for="confirmEmail" class="form-label">Confirme seu Email:</label>
+                <input type="email" id="confirmEmail" class="form-control" required aria-label="Confirmação do endereço de email">
+            </div>
+
+            <!-- Campo para senha -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Senha:</label>
+                <input type="password" id="password" th:field="*{password}" class="form-control" required minlength="8" aria-label="Senha" oninput="checkPasswordStrength()">
+                <div id="password-strength" class="password-strength"></div>
+            </div>
+
+            <!-- Campo para confirmação de senha -->
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirme sua Senha:</label>
+                <input type="password" id="confirmPassword" class="form-control" required aria-label="Confirmação da senha">
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+                <a href="/" class="btn btn-secondary">Voltar para a Página Inicial</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Incluir scripts do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para validar o formulário -->
+    <script>
+        function validateForm() {
+            var email = document.getElementById("email").value;
+            var confirmEmail = document.getElementById("confirmEmail").value;
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (email !== confirmEmail) {
+                alert("Os endereços de email não coincidem.");
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                alert("As senhas não coincidem.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkPasswordStrength() {
+            var password = document.getElementById("password").value;
+            var strengthText = document.getElementById("password-strength");
+            var strength = "";
+
+            if (password.length < 8) {
+                strength = "Muito fraca";
+            } else if (password.match(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])/)) {
+                strength = "Forte";
+            } else {
+                strength = "Fraca";
+            }
+
+            strengthText.innerHTML = "Força da senha: " + strength;
+        }
+    </script>
+</body>
+</html>

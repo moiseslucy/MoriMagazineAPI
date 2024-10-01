@@ -1,0 +1,7 @@
+# Definir fim de linha para o sistema operacional
+* text=auto
+
+# Manter arquivos binários sem modificação
+*.png binary
+*.jpg binary
+*.gif binary

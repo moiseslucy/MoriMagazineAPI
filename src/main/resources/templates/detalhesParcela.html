@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes da Parcela</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/clientes/listar">Lista de Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/produto/listar">Lista de Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transacao/listar">Lista de Transações</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container my-5">
+        <h1 class="text-center">Detalhes da Parcela</h1>
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="'Parcela ID: ' + ${parcela.id}">Parcela ID: 1</h2>
+            </div>
+            <div class="card-body">
+                <p><strong>Data de Vencimento:</strong> <span th:text="${parcela.dataVencimento}">2024-08-14</span></p>
+                <p><strong>Status:</strong> <span th:text="${parcela.status}">PENDENTE</span></p>
+                <p><strong>Valor da Parcela:</strong> R$<span th:text="${parcela.valorParcela}">57.99</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
