@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Realizar Venda</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <style>
+        body {
+            background-color: #28527a;
+            color: #f1f1f1;
+        }
+        .navbar-light {
+            background-color: #28527a;
+        }
+        .navbar-light .navbar-brand,
+        .navbar-light .navbar-nav .nav-link {
+            color: #f1f1f1;
+            font-family: Arial, sans-serif;
+        }
+        .navbar-light .navbar-nav .nav-link:hover {
+            color: #ff7b54;
+            font-family: Arial, sans-serif;
+        }
+        h1, .text-primary {
+            color: #f1f1f1;
+        }
+        .btn-primary {
+            background-color: #ff7b54;
+            border-color: #ff7b54;
+        }
+        .btn-primary:hover {
+            background-color: #ff616d;
+            border-color: #ff616d;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+        .alert-warning {
+            background-color: #ff7b54;
+            border-color: #ff616d;
+            color: #f1f1f1;
+        }
+        .resumo-vendas .linha {
+            background-color: #f1f1f1;
+            color: #28527a;
+            margin-bottom: 5px;
+            padding: 10px;
+        }
+        .forma-pagamento .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+        .forma-pagamento .form-row label {
+            flex: 0 0 150px;
+            margin-right: 10px;
+        }
+        .forma-pagamento .form-row .input-group {
+            flex-grow: 1;
+        }
+        .resumo-vendas {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .resumo-vendas p {
+            border-bottom: 2px solid #ffa07a;
+        }
+        .resumo-vendas p:last-child {
+            border-bottom: none;
+        }
+        #subtotal {
+            margin-left: 15px;
+        }
+        #adicionarProduto {
+            margin-right: 10px;
+        }
+        .forma-pagamento {
+            margin-top: 15px;
+        }
+        .busca-cliente {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .busca-cliente .pesquisa-cliente {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .resumo-vendas {
+            float: right;
+        }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/clientes/listar">Lista de Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/produto/listar">Lista de Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transacao/listar">Lista de Transações</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container my-5">
+        <h1 class="text-center">Realizar Venda</h1>
+        <form id="vendaForm" action="/transacao/salvarTransacao" method="post" th:object="${transacao}">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cliente">Cliente:</label>
+                        <select class="form-control" id="cliente" name="cliente" required>
+                            <option value="">Selecione o Cliente</option>
+                            <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nome}"></option>
+                        </select>
+                        <small class="form-text text-muted"><a href="/clientes/criarClienteForm">Cadastrar Novo Cliente</a></small>
+                    </div>
+                     <!-- Campo oculto para enviar o ID do cliente -->
+                    <input type="hidden" id="idCliente" name="idCliente" th:value="${idCliente}">
+                    <div class="busca-cliente">
+                        <div class="pesquisa-cliente">
+                            <input type="hidden" id="idCliente" name="idCliente" th:value="${idCliente}">
+
+                            <input type="text" class="form-control" placeholder="Pesquisar cliente...">
+                        </div>
+                        <button type="button" class="btn btn-info">Buscar</button>
+                    </div>
+                    <table class="table table-bordered" id="produtosTable">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd</th>
+                                <th>Valor Uni</th>
+                                <th>Valor Total</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produtosBody">
+                            <tr class="produto" data-index="0">
+                                <td>
+                                    <select class="form-control produtoSelect" id="produto0" name="transacaoProdutos[0].produto.id" required>
+                                        <option value="">Selecione o Produto</option>
+                                        <option th:each="produto : ${produtos}" th:value="${produto.id}" th:text="${produto.nomeProduto}" th:data-preco="${produto.preco}"></option>
+                                    </select>
+                                </td>
+                                <td><input type="number" class="form-control quantidadeInput" id="quantidade0" name="transacaoProdutos[0].quantidade" value="1" min="1" required></td>
+                                <td><input type="text" class="form-control valorUnitarioInput" id="valorUnitario0" readonly></td>
+                                <td><input type="text" class="form-control valorTotalInput" id="valorTotal0" readonly></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm excluirProduto">Excluir</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex align-items-center">
+                        <button type="button" id="adicionarProduto" class="btn btn-secondary mb-2">Adicionar outro produto</button>
+                        <p class="mb-2 ml-3"><strong>Subtotal:</strong> <span id="subtotal">R$0,00</span></p>
+                    </div>
+                    <div class="form-row formaPagamentoDestaque mb-3">
+                        <div class="col-md-6">
+                            <label class="col-form-label" for="formaPagamento">Forma de Pagamento:</label>
+                            <select class="form-control" id="formaPagamento" name="formaPagamento" required>
+                                <option value="">Selecione a Forma de Pagamento</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Cartão de Débito">Cartão de Débito</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Crediário">Crediário</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row parcelamentoFields" style="display: none;">
+                        <div class="col-md-6">
+                            <label class="col-form-label" for="numeroParcelas">Número de Parcelas:</label>
+                            <input type="number" class="form-control" id="numeroParcelas" name="numeroParcelas" min="1">
+                        </div>
+                    </div>
+                   <button type="submit" class="btn btn-primary">Concluir Venda</button>
+                    <button type="button" id="cancelarVenda" class="btn btn-danger">Cancelar Venda</button>
+                </div>
+                <div class="col-md-6">
+                    <div class="resumo-vendas">
+                        <h3 class="text-center">Resumo da Venda</h3>
+                        <div class="linha">
+                            <p><strong>Cliente:</strong> <span id="resumoCliente">Não definido</span></p>
+                            <div id="resumoProdutos"></div>
+                            <p><strong>Subtotal:</strong> <span id="resumoSubtotal">R$0,00</span></p>
+                            <p><strong>Forma de Pagamento:</strong> <span id="resumoFormaPagamento">Não definida</span></p>
+                            <p class="parcelamento" style="display: none;"><strong>Parcelamento:</strong> <span id="resumoParcelamento">Não definido</span></p>
+                            <div id="parcelasInfo"></div>
+                            <p><strong>Total:</strong> <span id="resumoTotal">R$0,00</span></p>
+                            <p><strong>Data da Compra:</strong> <span id="dataCompra"></span></p>
+                        </div>
+                    </div>
+                    <button id="imprimirResumo" class="btn btn-success mt-2">Imprimir Resumo</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Funções de atualização do valor total e subtotal
+            function atualizarValorTotal(index) {
+                const $produto = $(`#produto${index}`);
+                const preco = parseFloat($produto.find(':selected').data('preco') || 0);
+                const quantidade = parseInt($(`#quantidade${index}`).val() || 0);
+                const valorTotal = preco * quantidade;
+
+                $(`#valorUnitario${index}`).val(`R$${preco.toFixed(2)}`);
+                $(`#valorTotal${index}`).val(`R$${valorTotal.toFixed(2)}`);
+
+                atualizarSubtotal();
+            }
+
+            function atualizarSubtotal() {
+                let subtotal = 0;
+                let produtos = '';
+
+                $('.produto').each(function() {
+                    const index = $(this).data('index');
+                    const produto = $(`#produto${index} option:selected`).text();
+                    const quantidade = $(`#quantidade${index}`).val();
+                    const valorUnitario = $(`#valorUnitario${index}`).val();
+                    const valorTotal = $(`#valorTotal${index}`).val();
+
+                    if (produto && quantidade && valorUnitario && valorTotal) {
+                        subtotal += parseFloat(valorTotal.replace('R$', ''));
+                        produtos += `<p>${produto} (${quantidade} x ${valorUnitario} = ${valorTotal})</p>`;
+                    }
+                });
+
+                $('#subtotal').text(`R$${subtotal.toFixed(2)}`);
+                $('#resumoSubtotal').text(`R$${subtotal.toFixed(2)}`);
+                $('#resumoTotal').text(`R$${subtotal.toFixed(2)}`);
+                $('#resumoProdutos').html(produtos);
+                atualizarParcelamento();
+            }
+
+            function atualizarParcelamento() {
+                const formaPagamento = $('#formaPagamento').val();
+                const numeroParcelas = $('#numeroParcelas').val();
+                const subtotal = parseFloat($('#subtotal').text().replace('R$', ''));
+
+                if ((formaPagamento === 'Cartão de Crédito' || formaPagamento === 'Crediário') && numeroParcelas > 0) {
+                    const parcelaValor = (subtotal / numeroParcelas).toFixed(2);
+                    let parcelasHtml = '';
+
+                    for (let i = 1; i <= numeroParcelas; i++) {
+                        const hoje = new Date();
+                        hoje.setMonth(hoje.getMonth() + i);
+                        const vencimento = hoje.toLocaleDateString('pt-BR');
+                        parcelasHtml += `<p>Parcela ${i} - R$${parcelaValor} - Vencimento: ${vencimento}</p>`;
+                    }
+
+                    $('#resumoParcelamento').text(`${numeroParcelas}x de R$${parcelaValor}`);
+                    $('#parcelasInfo').html(parcelasHtml);
+                } else {
+                    $('#resumoParcelamento').text('Não definido');
+                    $('#parcelasInfo').empty();
+                }
+            }
+
+            function getDataAtual() {
+                const hoje = new Date();
+                return hoje.toLocaleDateString('pt-BR');
+            }
+
+            $('#dataCompra').text(getDataAtual());
+
+            // Adicionar um novo produto
+            let index = 1;
+            $('#adicionarProduto').on('click', function() {
+                const $novoProduto = $('.produto:first').clone();
+                $novoProduto.attr('data-index', index);
+                $novoProduto.find('.produtoSelect').attr('id', `produto${index}`).attr('name', `transacaoProdutos[${index}].produto.id`);
+                $novoProduto.find('.quantidadeInput').attr('id', `quantidade${index}`).attr('name', `transacaoProdutos[${index}].quantidade`).val(1);
+                $novoProduto.find('.valorUnitarioInput').attr('id', `valorUnitario${index}`).val('');
+                $novoProduto.find('.valorTotalInput').attr('id', `valorTotal${index}`).val('');
+
+                $('#produtosBody').append($novoProduto);
+                index++;
+            });
+
+            // Excluir um produto
+            $('#produtosBody').on('click', '.excluirProduto', function() {
+                if ($('#produtosBody .produto').length > 1) {
+                    const $produto = $(this).closest('.produto');
+                    Swal.fire({
+                        title: 'Tem certeza?',
+                        text: 'Você não poderá reverter isso!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, excluir!',
+                        cancelButtonText: 'Não, cancelar!',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $produto.remove();
+                            atualizarSubtotal();
+                            Swal.fire(
+                                'Excluído!',
+                                'O produto foi excluído.',
+                                'success'
+                            );
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Tem certeza?',
+                        text: 'Você não poderá reverter isso!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, excluir!',
+                        cancelButtonText: 'Não, cancelar!',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const $produto = $(this).closest('.produto');
+                            $produto.find('.produtoSelect').val('');
+                            $produto.find('.quantidadeInput').val(1);
+                            $produto.find('.valorUnitarioInput').val('');
+                            $produto.find('.valorTotalInput').val('');
+                            atualizarSubtotal();
+                            Swal.fire(
+                                'Limpo!',
+                                'O formulário foi limpo.',
+                                'success'
+                            );
+                        }
+                    });
+                }
+            });
+
+            // Atualizar valores ao alterar produto ou quantidade
+            $('#produtosBody').on('change', '.produtoSelect, .quantidadeInput', function() {
+                const index = $(this).closest('.produto').data('index');
+                atualizarValorTotal(index);
+            });
+
+            // Atualizar forma de pagamento
+            $('#formaPagamento').on('change', function() {
+                const formaPagamento = $(this).val();
+                $('#resumoFormaPagamento').text(formaPagamento);
+
+                if (formaPagamento === 'Cartão de Crédito' || formaPagamento === 'Crediário') {
+                    $('.parcelamentoFields').show();
+                    $('.parcelamento').show();
+                } else {
+                    $('.parcelamentoFields').hide();
+                    $('.parcelamento').hide();
+                    $('#numeroParcelas').val('');
+                    $('#resumoParcelamento').text('Não definido');
+                    $('#parcelasInfo').empty();
+                }
+                atualizarParcelamento();
+            });
+
+            // Atualizar parcelamento
+            $('#numeroParcelas').on('input', function() {
+                atualizarParcelamento();
+            });
+
+            // Atualizar cliente no resumo
+            $('#cliente').on('change', function() {
+                const cliente = $(this).find(':selected').text();
+                $('#resumoCliente').text(cliente);
+            });
+
+            // Função para imprimir o resumo da venda
+            $('#imprimirResumo').on('click', function() {
+                window.print();
+            });
+
+            // Função para cancelar a venda
+            $('#cancelarVenda').on('click', function() {
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: 'Todos os dados serão perdidos!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, cancelar!',
+                    cancelButtonText: 'Não, continuar!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#vendaForm')[0].reset();
+                        $('#resumoCliente').text('Não definido');
+                        $('#resumoProdutos').empty();
+                        $('#subtotal').text('R$0,00');
+                        $('#resumoSubtotal').text('R$0,00');
+                        $('#resumoTotal').text('R$0,00');
+                        $('#resumoFormaPagamento').text('Não definida');
+                        $('#resumoParcelamento').text('Não definido');
+                        $('#parcelasInfo').empty();
+                        $('.parcelamentoFields').hide();
+                        $('.parcelamento').hide();
+                        $('#dataCompra').text(getDataAtual());
+                        Swal.fire(
+                            'Cancelado!',
+                            'A venda foi cancelada.',
+                            'success'
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

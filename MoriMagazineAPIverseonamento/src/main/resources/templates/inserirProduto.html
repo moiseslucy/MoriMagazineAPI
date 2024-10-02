@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Inserir Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #1a1a1a; /* Cor de fundo preta */
+            color: #fff; /* Texto branco */
+        }
+        h1 {
+            color: #ff4500; /* Laranja */
+        }
+        .btn-info {
+            background-color: #17a2b8; /* Azul claro */
+            border-color: #17a2b8; /* Azul claro */
+        }
+        .btn-info:hover {
+            background-color: #138496; /* Azul mais escuro */
+            border-color: #138496; /* Azul mais escuro */
+        }
+        .form-control {
+            background-color: #343a40; /* Cinza mais escuro */
+            color: #fff; /* Texto branco */
+            border-color: #6c757d; /* Cinza */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Inserir Produto</h1>
+    <form th:action="@{/produto/salvarProduto}" th:object="${produto}" method="POST">
+        
+        <input type="text" th:field="*{nomeProduto}" placeholder="Insira o nome do produto" class="form-control mb-4 col-4">
+        
+        <div class="input-group mb-4 col-4">
+            <div class="input-group-prepend">
+                <span class="input-group-text">R$</span>
+            </div>
+            <input type="text" th:field="*{preco}" placeholder="Insira o preço" class="form-control">
+        </div>
+        
+        <input type="date" th:field="*{dataCompra}" placeholder="Insira a data de compra" class="form-control mb-4 col-4">
+
+        <input type="text" th:field="*{descricao}" placeholder="Insira a descrição do produto" class="form-control mb-4 col-4">
+        
+        <div class="form-group mb-4 col-4">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" th:field="*{quantidade}" placeholder="Insira a quantidade disponível" class="form-control">
+        </div>
+        
+        <button type="submit" class="btn btn-info col-2">Salvar</button>
+    </form>
+    <a th:href="@{/produto/listar}">Retornar para a Lista de Produtos</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Parcelas Atrasadas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <style>
+        .pago {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .pendente {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .atrasado {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/clientes/listar">Lista de Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="/produto/listar">Lista de Produtos</a></li>
+            <li class="nav-item"><a class="nav-link" href="/transacao/listar">Lista de Transações</a></li>
+            <li class="nav-item"><a class="nav-link" href="/transacao/criarForm">Registrar Venda</a></li>
+            <li class="nav-item"><a class="nav-link" href="/transacao/parcelas-atrasadas">Parcelas Atrasadas</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container my-5">
+    <h1 class="text-center">Parcelas Atrasadas</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID da Parcela</th>
+                <th>Nome do Cliente</th>
+                <th>Data de Vencimento</th>
+                <th>Status</th>
+                <th>Valor da Parcela</th>
+                <th>Operações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="parcela : ${parcelasAtrasadas}">
+                <td th:text="${parcela.id}">1</td>
+                <td th:text="${parcela.transacao.cliente.nome}">Cliente</td>
+                <td th:text="${parcela.dataVencimento}">01/01/2024</td>
+                <td th:classappend="${parcela.status.name().toLowerCase()}">
+                    <span th:text="${parcela.status.name()}">Atrasado</span>
+                </td>
+                <td th:text="${parcela.valorParcela}">100.00</td>
+                <td>
+                    <button class="btn btn-success btn-sm" 
+                            th:data-parcela-id="${parcela.id}" 
+                            onclick="showModalBaixarParcela(this.getAttribute('data-parcela-id'))">
+                        Baixar
+                    </button>
+
+                    <button class="btn btn-warning btn-sm" 
+                            th:data-parcela-id="${parcela.id}"
+                            onclick="showModalEnviarComprovante(this.getAttribute('data-parcela-id'))">
+                        Enviar Comprovante
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Baixar Parcela -->
+<div class="modal fade" id="modalBaixarParcela" tabindex="-1" role="dialog" aria-labelledby="modalBaixarParcelaLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBaixarParcelaLabel">Baixar Parcela</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formBaixarParcela" method="post">
+                    <p>Deseja realmente baixar esta parcela?</p>
+                    <input type="hidden" id="parcelaIdBaixar" name="parcelaId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="submitBaixarParcela()">Baixar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Enviar Comprovante -->
+<div class="modal fade" id="modalEnviarComprovante" tabindex="-1" role="dialog" aria-labelledby="modalEnviarComprovanteLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEnviarComprovanteLabel">Enviar Comprovante</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formEnviarComprovante" method="post">
+                    <p>Deseja realmente enviar o comprovante de pagamento para esta parcela?</p>
+                    <input type="hidden" id="parcelaIdEnviar" name="parcelaId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="submitEnviarComprovante()">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts necessários -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- Funções JavaScript -->
+<script>
+    function showModalBaixarParcela(parcelaId) {
+        $('#parcelaIdBaixar').val(parcelaId);
+        $('#modalBaixarParcela').modal('show');
+    }
+
+    function submitBaixarParcela() {
+        var parcelaId = $('#parcelaIdBaixar').val();
+        $.ajax({
+            url: '/transacao/baixar-parcela/' + parcelaId,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === 'success') {
+                    location.reload();  // Recarrega a página para refletir a mudança
+                } else {
+                    alert('Erro: ' + response.message);
+                }
+            },
+            error: function (xhr) {
+                alert('Erro ao baixar a parcela: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function showModalEnviarComprovante(parcelaId) {
+        $('#parcelaIdEnviar').val(parcelaId);
+        $('#modalEnviarComprovante').modal('show');
+    }
+
+    function submitEnviarComprovante() {
+        var parcelaId = $('#parcelaIdEnviar').val();
+        $.ajax({
+            url: '/transacao/enviar-comprovante/' + parcelaId,
+            type: 'POST',
+            success: function (response) {
+                alert('Comprovante enviado com sucesso.');
+            },
+            error: function (xhr) {
+                alert('Erro ao enviar o comprovante: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function updateTransactionStatus(parcelaId, callback) {
+        $.ajax({
+            url: '/transacao/atualizar-status-transacao/' + parcelaId,
+            type: 'POST',
+            success: function (response) {
+                callback();
+            },
+            error: function (xhr) {
+                alert('Erro ao atualizar o status da transação: ' + xhr.responseText);
+            }
+        });
+    }
+</script>
+</body>
+</html>

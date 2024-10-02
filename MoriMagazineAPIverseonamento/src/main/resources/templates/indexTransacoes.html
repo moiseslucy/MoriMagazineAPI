@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Transações</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <style>
+        .details {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" th:href="@{/clientes/listar}">Lista de Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/produto/listar}">Lista de Produtos</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/transacao/listar}">Lista de Transações</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container my-5">
+    <h1 class="text-center">Lista de Transações</h1>
+    <input type="text" class="form-control mb-3" placeholder="Pesquisar Cliente por Nome ou ID">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID da Transação</th>
+                <th>Cliente</th>
+                <th>Data da Transação</th>
+                <th>Status</th>
+                <th>Forma de Pagamento</th>
+                <th>Valor Total</th>
+                <th>Operações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="transacao : ${transacoes}">
+                <td th:text="${transacao.id}"></td>
+                <td th:text="${transacao.cliente.nome}"></td>
+                <td th:text="${#dates.format(transacao.dataTransacao, 'dd/MM/yyyy')}"></td>
+                <td th:text="${transacao.status}"></td>
+                <td th:text="${transacao.formaPagamento}"></td>
+                <td th:text="${transacao.valorTotal}"></td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="toggleDetails(this)">Detalhes</button>
+                </td>
+            </tr>
+            <tr class="details" th:each="transacao : ${transacoes}">
+                <td colspan="7">
+                    <div>
+                        <p>Cliente: <span th:text="${transacao.cliente.nome}"></span></p>
+                        <!-- Exibir o idCliente -->
+                        <p>ID do Cliente: <span th:text="${transacao.cliente.id}"></span></p>
+                        <p>Produtos comprados:</p>
+                        <ul>
+                            <li th:each="produto : ${transacao.produtos}">
+                                <span th:text="${produto.nomeProduto}"> - </span>
+                                <span th:text="${produto.quantidade}"> x R$</span>
+                                <span th:text="${produto.preco}"> = R$</span>
+                                <span th:text="${produto.quantidade.multiply(produto.preco)}"></span>
+                            </li>
+                        </ul>
+                        <p>Subtotal: R$<span th:text="${transacao.valorTotal}"></span></p>
+                        <p>Forma de Pagamento: <span th:text="${transacao.formaPagamento}"></span></p>
+                        <p th:if="${transacao.numeroParcelas != null && transacao.numeroParcelas > 1}">
+                            Parcelamento: <span th:text="${transacao.numeroParcelas}"></span>x de R$<span th:text="${transacao.valorTotal.divide(transacao.numeroParcelas, 2, RoundingMode.HALF_UP)}"></span>
+                        </p>
+                        <div th:if="${transacao.numeroParcelas != null && transacao.numeroParcelas > 1}">
+                            <p>Parcelas:</p>
+                            <ul>
+                                <li th:each="parcela, iterStat : ${transacao.parcelas}">
+                                    Parcela <span th:text="${iterStat.count}"> - </span>
+                                    R$<span th:text="${parcela.valor}"> - Vencimento: </span>
+                                    <span th:text="${#dates.format(parcela.dataVencimento, 'dd/MM/yyyy')}"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <p>Total: R$<span th:text="${transacao.valorTotal}"></span></p>
+                        <p>Data da Compra: <span th:text="${#dates.format(transacao.dataTransacao, 'dd/MM/yyyy')}"></span></p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    function toggleDetails(button) {
+        var detailsRow = button.closest('tr').nextElementSibling;
+        if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+            detailsRow.style.display = 'table-row';
+        } else {
+            detailsRow.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

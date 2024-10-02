@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Exclusão do Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #20b2aa; /* azul lesma do mar */
+            color: #fff; /* Texto branco */
+        }
+        h2 {
+            color: #ff4500; /* Laranja */
+        }
+        p {
+            color: #fff; /* Texto branco */
+        }
+        button {
+            background-color: #dc3545; /* Vermelho */
+            color: #fff; /* Texto branco */
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c82333; /* Vermelho mais escuro */
+        }
+        a {
+            color: #fff; /* Texto branco */
+            text-decoration: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Confirmação de Exclusão do Produto</h2>
+   <p style="font-weight: bold; color: #ff6347;">Atenção: Esta ação é irreversível e o produto será excluído permanentemente!</p>
+    <p>Você tem certeza que deseja excluir o produto:</p>
+    <div>
+        <p>Nome: <span th:text="${produto.nomeProduto}"></span></p>
+        <p>Preço: <span th:text="${produto.preco}"></span></p>
+        <!-- Adicione aqui outros detalhes do produto, se necessário -->
+    </div>
+    <form th:action="@{/produto/deletar/{id}(id=${produto.id})}" method="post">
+        <button type="submit">Confirmar</button>
+        <a th:href="@{/produto/listar}">Cancelar</a>
+    </form>
+</body>
+</html>
