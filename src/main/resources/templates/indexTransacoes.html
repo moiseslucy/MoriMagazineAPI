@@ -1,100 +1,409 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Transações</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <title>Lista de Transações - Mori Magazine</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Fontes Elegantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
+        body {
+            background-color: #1a1a1a; /* Fundo preto elegante */
+            color: white;
+            font-family: 'Open Sans', sans-serif; /* Fonte principal */
+        }
+        .navbar, .footer {
+            background-color: #111; /* Preto profundo para navbar e rodapé */
+            color: white;
+        }
+        .navbar .nav-link {
+            color: #d4af37; /* Dourado suave para links */
+            font-weight: 600; /* Negrito para destaque */
+        }
+        .navbar .nav-link:hover {
+            color: #b8860b; /* Dourado mais escuro no hover */
+        }
+        .container {
+            background: #222; /* Fundo escuro para o container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        h1 {
+            color: #d4af37; /* Dourado suave para o título */
+            font-size: 2.5rem;
+            font-family: 'Merriweather', serif; /* Fonte elegante para o título */
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .btn-custom {
+            background-color: #d4af37; /* Dourado para botões */
+            color: white;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 50px; /* Bordas arredondadas para UX aprimorada */
+            margin-top: 15px;
+        }
+        .btn-custom:hover {
+            background-color: #b8860b; /* Dourado mais escuro no hover */
+            border-color: #b8860b;
+            color: #fff;
+        }
+        .btn-detalles, .btn-primary {
+            background-color: #d4af37; /* Dourado para botões */
+            border-color: #b8860b; /* Borda dourada escura */
+        }
+        .btn-detalles:hover, .btn-primary:hover {
+            background-color: #b8860b; /* Dourado mais escuro no hover */
+            border-color: #b8860b;
+        }
+        .table {
+            background-color: #222; /* Fundo escuro para a tabela */
+            color: white; /* Texto branco para contraste */
+            margin-bottom: 30px;
+        }
+        .table thead th {
+            background-color: #343a40; /* Fundo escuro para cabeçalho da tabela */
+            color: #d4af37; /* Texto dourado claro */
+            font-family: 'Merriweather', serif; /* Fonte elegante para o cabeçalho */
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.1); /* Tons leves de branco para linhas ímpares */
+        }
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: rgba(255, 255, 255, 0.05); /* Tons leves de branco para linhas pares */
+        }
+        .pago {
+            color: #b8860b; /* Dourado escuro para status Pago */
+            font-weight: bold;
+        }
+        .pendente {
+            color: #FFC107; /* Amarelo para status Pendente */
+            font-weight: bold;
+        }
+        .atrasado {
+            color: #FF5722; /* Vermelho alaranjado para status Atrasado */
+            font-weight: bold;
+        }
         .details {
-            display: none;
+            display: none; /* Esconder detalhes por padrão */
+        }
+        .footer {
+            background-color: #111;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .footer p {
+            margin: 0;
+            font-size: 1rem;
+            color: #999;
+        }
+        .modal-body p {
+            color: black; /* Texto em preto para advertência */
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">Voltar à Página Inicial</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" th:href="@{/clientes/listar}">Lista de Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/produto/listar}">Lista de Produtos</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/transacao/listar}">Lista de Transações</a></li>
-        </ul>
-    </div>
-</nav>
-<div class="container my-5">
-    <h1 class="text-center">Lista de Transações</h1>
-    <input type="text" class="form-control mb-3" placeholder="Pesquisar Cliente por Nome ou ID">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID da Transação</th>
-                <th>Cliente</th>
-                <th>Data da Transação</th>
-                <th>Status</th>
-                <th>Forma de Pagamento</th>
-                <th>Valor Total</th>
-                <th>Operações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="transacao : ${transacoes}">
-                <td th:text="${transacao.id}"></td>
-                <td th:text="${transacao.cliente.nome}"></td>
-                <td th:text="${#dates.format(transacao.dataTransacao, 'dd/MM/yyyy')}"></td>
-                <td th:text="${transacao.status}"></td>
-                <td th:text="${transacao.formaPagamento}"></td>
-                <td th:text="${transacao.valorTotal}"></td>
-                <td>
-                    <button class="btn btn-info btn-sm" onclick="toggleDetails(this)">Detalhes</button>
-                </td>
-            </tr>
-            <tr class="details" th:each="transacao : ${transacoes}">
-                <td colspan="7">
-                    <div>
-                        <p>Cliente: <span th:text="${transacao.cliente.nome}"></span></p>
-                        <!-- Exibir o idCliente -->
-                        <p>ID do Cliente: <span th:text="${transacao.cliente.id}"></span></p>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="/">Mori Magazine</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="/clientes/listar">Lista de Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/produto/listar">Lista de Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transacao/listar">Lista de Transações</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transacao/criarForm">Registrar Venda</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transacao/parcelas-atrasadas">Parcelas Atrasadas</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-center">Lista de Transações</h1>
+        <form class="form-inline mb-3 justify-content-center" action="/transacao/listar" method="get">
+            <div class="form-group mr-3">
+                <input type="text" class="form-control" name="nomeCliente" placeholder="Pesquisar Cliente por Nome">
+            </div>
+            <div class="form-group mr-3">
+                <select class="form-control" name="mes">
+                    <option value="">Mês</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+            </div>
+            <div class="form-group mr-3">
+                <select class="form-control" name="ano">
+                    <option value="">Ano</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div class="form-group mr-3">
+                <select class="form-control" name="formaPagamento">
+                    <option value="">Forma de Pagamento</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="debito">Débito</option>
+                    <option value="pix">Pix</option>
+                    <option value="crediario">Crediário</option>
+                    <option value="cartao_credito">Cartão de Crédito</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-custom">Buscar</button>
+        </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID da Transação</th>
+                    <th>Cliente</th>
+                    <th>Data da Transação</th>
+                    <th>Status</th>
+                    <th>Forma de Pagamento</th>
+                    <th>Valor Total</th>
+                    <th>Operações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="transacao, iterStat : ${transacoes}">
+                    <td th:text="${transacao.id}">1</td>
+                    <td th:text="${transacao.cliente.nome}">Cliente</td>
+                    <td th:text="${#temporals.format(transacao.dataTransacao, 'dd/MM/yyyy')}">01/01/2024</td>
+                    <td th:text="${transacao.status}"
+                        th:class="${transacao.status == 'Pago' || transacao.formaPagamento == 'debito' || transacao.formaPagamento == 'cartao_credito' ? 'pago' : (transacao.status == 'Pendente' ? 'pendente' : 'atrasado')}">
+                    </td>
+                    <td th:text="${transacao.formaPagamento}">Dinheiro</td>
+                    <td th:text="${transacao.valorTotal}">100.00</td>
+                    <td>
+                        <button class="btn btn-detalles btn-sm" 
+                                th:onclick="'toggleDetails(\'details' + ${iterStat.index} + '\')'">
+                            Detalhes
+                        </button>
+                    </td>
+                </tr>
+                <tr th:each="transacao, iterStat : ${transacoes}" th:class="'details details' + ${iterStat.index}" id="details" th:id="'details' + ${iterStat.index}">
+                    <td colspan="7">
+                        <p>Cliente: <span th:text="${transacao.cliente.nome}">Nome do Cliente</span></p>
+                        <p>ID do Cliente: <span th:text="${transacao.cliente.id}">1</span></p>
                         <p>Produtos comprados:</p>
                         <ul>
-                            <li th:each="produto : ${transacao.produtos}">
-                                <span th:text="${produto.nomeProduto}"> - </span>
-                                <span th:text="${produto.quantidade}"> x R$</span>
-                                <span th:text="${produto.preco}"> = R$</span>
-                                <span th:text="${produto.quantidade.multiply(produto.preco)}"></span>
+                            <li th:each="item : ${transacao.itens}">
+                                <span th:text="${item.produto.nomeProduto}">Produto</span>
+                                Qtd: <span th:text="${item.quantidade}">1</span>
+                                Preço Unit: <span th:text="${item.precoUnitario}">100.00</span>
+                                Total: <span th:text="${item.subtotal}">100.00</span>
                             </li>
                         </ul>
-                        <p>Subtotal: R$<span th:text="${transacao.valorTotal}"></span></p>
-                        <p>Forma de Pagamento: <span th:text="${transacao.formaPagamento}"></span></p>
-                        <p th:if="${transacao.numeroParcelas != null && transacao.numeroParcelas > 1}">
-                            Parcelamento: <span th:text="${transacao.numeroParcelas}"></span>x de R$<span th:text="${transacao.valorTotal.divide(transacao.numeroParcelas, 2, RoundingMode.HALF_UP)}"></span>
-                        </p>
-                        <div th:if="${transacao.numeroParcelas != null && transacao.numeroParcelas > 1}">
-                            <p>Parcelas:</p>
-                            <ul>
-                                <li th:each="parcela, iterStat : ${transacao.parcelas}">
-                                    Parcela <span th:text="${iterStat.count}"> - </span>
-                                    R$<span th:text="${parcela.valor}"> - Vencimento: </span>
-                                    <span th:text="${#dates.format(parcela.dataVencimento, 'dd/MM/yyyy')}"></span>
-                                </li>
-                            </ul>
-                        </div>
-                        <p>Total: R$<span th:text="${transacao.valorTotal}"></span></p>
-                        <p>Data da Compra: <span th:text="${#dates.format(transacao.dataTransacao, 'dd/MM/yyyy')}"></span></p>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<script>
-    function toggleDetails(button) {
-        var detailsRow = button.closest('tr').nextElementSibling;
-        if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
-            detailsRow.style.display = 'table-row';
-        } else {
-            detailsRow.style.display = 'none';
+                        <p>Subtotal: R$<span th:text="${transacao.valorTotal}">100.00</span></p>
+                        <p>Forma de Pagamento: <span th:text="${transacao.formaPagamento}">Dinheiro</span></p>
+                        <p>Total: R$<span th:text="${transacao.valorTotal}">100.00</span></p>
+                        <p>Data da Compra: <span th:text="${#temporals.format(transacao.dataTransacao, 'dd/MM/yyyy')}">01/01/2024</span></p>
+
+                        <h3>Parcelas</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Data de Vencimento</th>
+                                    <th>Status</th>
+                                    <th>Valor da Parcela</th>
+                                    <th>Operações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="parcela : ${transacao.parcelas}" th:classappend="${parcela.status == 'PAGO' ? 'pago' : ''}">
+                                    <td th:text="${parcela.dataVencimento}">01/01/2024</td>
+                                    <td th:text="${parcela.status}">Pendente</td>
+                                    <td th:text="${parcela.valorParcela}">50.00</td>
+                                    <td>
+                                        <a class="btn btn-custom btn-sm" th:href="@{'/transacao/detalhesParcela/' + ${parcela.id}}">Detalhes</a>
+                                        <button class="btn btn-custom btn-sm" 
+                                                th:data-parcela-id="${parcela.id}" 
+                                                onclick="baixarParcela(this)">
+                                            Baixar
+                                        </button>
+                                        <button class="btn btn-custom btn-sm" 
+                                                th:data-parcela-id="${parcela.id}"
+                                                th:data-telefone="${transacao.cliente.telefone}"
+                                                th:data-valor="${parcela.valorParcela}"
+                                                th:data-parcelas-restantes="${parcela.restantes}"
+                                                onclick="showModalEnviarComprovante(this)">
+                                            Enviar Comprovante
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Baixar Parcela -->
+    <div class="modal fade" id="modalBaixarParcela" tabindex="-1" role="dialog" aria-labelledby="modalBaixarParcelaLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBaixarParcelaLabel">Baixar Parcela</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formBaixarParcela" method="post">
+                        <p>Deseja realmente baixar esta parcela?</p>
+                        <input type="hidden" id="parcelaIdBaixar" name="parcelaId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-custom" onclick="submitBaixarParcela()">Baixar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Enviar Comprovante -->
+    <div class="modal fade" id="modalEnviarComprovante" tabindex="-1" role="dialog" aria-labelledby="modalEnviarComprovanteLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEnviarComprovanteLabel">Enviar Comprovante</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEnviarComprovante" method="post">
+                        <p>Deseja realmente enviar o comprovante de pagamento para esta parcela?</p>
+                        <input type="hidden" id="parcelaIdEnviar" name="parcelaId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-custom" onclick="submitEnviarComprovante()">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Funções JavaScript -->
+    <script>
+        function toggleDetails(detailsId) {
+            var detailsRow = document.getElementById(detailsId);
+            var button = document.querySelector('button[onclick*="' + detailsId + '"]');
+            if (detailsRow) {
+                if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+                    detailsRow.style.display = 'table-row';
+                    button.classList.add('active');
+                } else {
+                    detailsRow.style.display = 'none';
+                    button.classList.remove('active');
+                }
+            } else {
+                console.error('Details row not found for ID: ' + detailsId);
+            }
         }
-    }
-</script>
+
+        function baixarParcela(button) {
+            var parcelaId = button.getAttribute('data-parcela-id');
+            $('#parcelaIdBaixar').val(parcelaId);
+            $('#modalBaixarParcela').modal('show');
+        }
+
+        function submitBaixarParcela() {
+            var parcelaId = $('#parcelaIdBaixar').val();
+            $.ajax({
+                url: '/transacao/baixar-parcela/' + parcelaId,
+                type: 'POST',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        // Atualizar o status da parcela na interface
+                        var parcelaRow = $('button[data-parcela-id="' + parcelaId + '"]').closest('tr');
+                        parcelaRow.removeClass('pendente atrasado').addClass('pago');
+                        parcelaRow.find('td:nth-child(2)').text('Pago');
+
+                        // Atualizar o número de parcelas restantes
+                        var restantes = parcelaRow.find('button[data-parcelas-restantes]').attr('data-parcelas-restantes');
+                        if (restantes > 0) {
+                            restantes--;
+                            parcelaRow.find('button[data-parcelas-restantes]').attr('data-parcelas-restantes', restantes);
+                        }
+
+                        $('#modalBaixarParcela').modal('hide');
+                    } else {
+                        alert('Erro: ' + response.message);
+                    }
+                },
+                error: function (xhr) {
+                    alert('Erro ao baixar a parcela: ' + xhr.responseText);
+                }
+            });
+        }
+
+        function showModalEnviarComprovante(button) {
+            var parcelaId = button.getAttribute('data-parcela-id');
+            var telefoneCliente = button.getAttribute('data-telefone');
+            var valorParcela = button.getAttribute('data-valor');
+            var parcelasRestantes = button.getAttribute('data-parcelas-restantes');
+
+            var parcelaStatus = button.closest('tr').querySelector('td:nth-child(2)').innerText;
+            if (parcelaStatus !== 'Pago') {
+                $('#modalBaixarParcela').modal('show');
+                $('#modalBaixarParcelaLabel').text('Atenção');
+                $('#formBaixarParcela p').text('Você não pode enviar um comprovante de pagamento sem antes dar baixa na parcela. Por favor, baixe a parcela primeiro.');
+                $('#modalBaixarParcela .btn-custom').hide(); // Esconder botão de baixar parcela
+                return;
+            }
+
+            var url = "https://wa.me/" + telefoneCliente.replace(/\D/g, '') + "?text=" +
+                encodeURIComponent("Muito obrigado pelo pagamento! Mori Magazine agradece. Detalhes do pagamento:\n" +
+                    "Código de pagamento: " + parcelaId + "\n" +
+                    "Valor: R$ " + valorParcela + "\n" +
+                    "Parcelas restantes: " + parcelasRestantes);
+            window.open(url, '_blank');
+        }
+
+        // Reset modal state when closed
+        $('#modalBaixarParcela').on('hidden.bs.modal', function () {
+            $('#formBaixarParcela p').text('Deseja realmente baixar esta parcela?');
+            $('#modalBaixarParcela .btn-custom').show();
+        });
+
+        function submitEnviarComprovante() {
+            var parcelaId = document.getElementById('parcelaIdEnviar').value;
+            $.ajax({
+                url: '/transacao/enviar-comprovante/' + parcelaId,
+                type: 'POST',
+                success: function (response) {
+                    alert('Comprovante enviado com sucesso.');
+                },
+                error: function (xhr) {
+                    alert('Erro ao enviar o comprovante: ' + xhr.responseText);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

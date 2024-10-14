@@ -8,18 +8,22 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor  // Lombok cria o construtor padrão sem argumentos
+@AllArgsConstructor // Lombok cria o construtor com todos os argumentos
 @Entity
 @Table(name = "Cliente")
 public class ClienteEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+   @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;  // Alterado para Integer
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 2, message = "Informe ao menos 2 caracteres para o campo nome")
@@ -35,77 +39,5 @@ public class ClienteEntity {
     private LocalDate dataNascimento;
 
     private String sexo;
-
     private String telefone;
-
-    // Construtor padrão vazio
-    public ClienteEntity() {}
-
-    // Construtor com todos os campos
-    public ClienteEntity(Integer id, String nome, String endereco, String cpf, LocalDate dataNascimento, String sexo, String telefone) {
-        this.id = id;
-        this.nome = nome;
-        this.endereco = endereco;
-        this.cpf = cpf;
-        this.dataNascimento = dataNascimento;
-        this.sexo = sexo;
-        this.telefone = telefone;
-    }
-
-    // Getters e setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
-    public String getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
 }

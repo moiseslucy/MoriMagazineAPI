@@ -2,7 +2,6 @@ package com.api.MoriMagazineAPI.controller;
 
 import com.api.MoriMagazineAPI.data.ProdutoEntity;
 import com.api.MoriMagazineAPI.service.ProdutoService;
-
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,8 @@ public class ProdutoControllerPostmanAPI {
     }
 
     @GetMapping("/pesquisar/{id}")
-    public ResponseEntity<ProdutoEntity> getProdutoById(@PathVariable Long id) {
-        ProdutoEntity produto = produtoService.getProdutoId(id);
+    public ResponseEntity<ProdutoEntity> getProdutoById(@PathVariable Integer id) { // Alterado para Integer
+        ProdutoEntity produto = produtoService.getProdutoId(id); // Ajustado para o método correto
         return new ResponseEntity<>(produto, HttpStatus.OK);
     }
 
@@ -48,13 +47,13 @@ public class ProdutoControllerPostmanAPI {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<ProdutoEntity> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoEntity produto) {
-        var produtoAtualizado = produtoService.atualizarProduto(id, produto);
+    public ResponseEntity<ProdutoEntity> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoEntity produto) { // Alterado para Integer
+        var produtoAtualizado = produtoService.atualizarProduto(id, produto); // Ajustado para passar o ID
         return new ResponseEntity<>(produtoAtualizado, HttpStatus.OK);
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarProduto(@PathVariable Integer id) { // Alterado para Integer
         produtoService.deletarProduto(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

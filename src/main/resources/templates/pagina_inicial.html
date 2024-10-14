@@ -1,72 +1,276 @@
+
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Inicial - Mori Magazine</title>
 
-    <!-- Estilos -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Estilos Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-   <style>
-    body {
-        background-color: #28527a; /* Azul marinho */
-    }
-    h1 {
-        color: #f1f1f1; /* Quase branco para alto contraste */
-    }
-    .btn-primary {
-        background-color: #ff7b54; /* Coral vibrante */
-        border-color: #ff7b54; /* Coral vibrante */
-    }
-    .btn-primary:hover {
-        background-color: #ff616d; /* Rosa choque */
-        border-color: #ff616d; /* Rosa choque */
-    }
-    .container {
-        padding-bottom: 50px; /* Mantém o espaço abaixo dos botões */
-    }
-    .logo-container {
-        margin-top: 30px; /* Mantém o espaço acima da imagem */
-    }
-    .logo-container img {
-        width: 100%; /* Mantém a imagem estendida horizontalmente */
-        height: auto; /* Ajusta a altura automaticamente para manter a proporção */
-        display: block; /* Mantém o espaço acima e abaixo da imagem */
-        margin: 0 auto; /* Mantém a imagem centralizada */
-    }
-</style>
-
+    <!-- Fontes Elegantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos customizados -->
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 20px;
+        }
+        body.light-mode {
+            background-color: white;
+            color: black;
+        }
+        .navbar, .footer {
+            background-color: #111;
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar.light-mode, .footer.light-mode {
+            background-color: #f8f9fa;
+            color: black;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .theme-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .theme-toggle .btn {
+            font-size: 0.9rem;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            background-color: transparent;
+            border-radius: 50px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .navbar .theme-toggle .btn:hover {
+            background-color: #d4af37;
+            color: #1a1a1a;
+        }
+        .nav-link {
+            color: #d4af37;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            margin-right: 20px;
+        }
+        .nav-link:hover {
+            color: #b8860b;
+        }
+        .hero {
+            height: 75vh;
+            background: url('/imagens/morinova.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        .hero h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 5rem;
+            color: #d4af37;
+            z-index: 2;
+            position: relative;
+            animation: fadeInOut 4s ease-out infinite alternate;
+        }
+        .hero p {
+            font-size: 1.8rem;
+            color: #f5f5f5;
+            z-index: 2;
+            position: relative;
+            margin-top: 20px;
+            opacity: 0.9;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        .btn-custom {
+            background-color: #d4af37;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 10px;
+            padding: 15px 40px;
+            border-radius: 40px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+        }
+        .btn-custom:hover {
+            background-color: #b8860b;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .footer {
+            padding: 30px 0;
+            margin-top: 50px;
+            font-size: 1rem;
+            color: #999;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        .dropdown-menu {
+            background-color: #1a1a1a;
+            border: 1px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .dropdown-menu a {
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+        .dropdown-menu a:hover {
+            background-color: #b8860b;
+            color: white;
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+        .container .btn-custom {
+            margin-top: 20px;
+            animation: slideInUp 0.5s ease-out;
+        }
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
-<body>
-<div class="container my-5">
-    <h1 class="text-center mt-5">Bem-vindo à Mori Magazine</h1>
-    <!-- Botões -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <a href="/clientes/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Clientes</a>
+<body th:classappend="${preferencia.estilo == 'claro'} ? 'light-mode' : 'dark-mode'">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Mori Magazine</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <!-- Condicional para exibir saudação correta -->
+                        <span class="nav-link" th:if="${remoteUser != null}">Olá, <span th:text="${remoteUser}">Usuário</span>!</span>
+                        <span class="nav-link" th:if="${remoteUser == null}">Bem-vindo!</span>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" th:if="${remoteUser == null}" th:href="@{/login}" id="login-btn">Entrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:if="${remoteUser == null}" th:href="@{/register}" id="register-btn">Registrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:if="${remoteUser != null}" th:href="@{/logout}" id="logout-btn">Sair</a>
+                    </li>
+                </ul>
+                <!-- Botões de alternância de tema -->
+                <div class="theme-toggle">
+                    <button id="light-mode-btn" class="btn">Modo Claro</button>
+                    <button id="dark-mode-btn" class="btn">Modo Escuro</button>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <a href="/produto/listar" class="btn btn-primary btn-lg btn-block">Gerenciamento de Produtos</a>
-        </div>
-    </div>
-    <div class="row justify-content-center logo-container">
-        <img src="/imagens/logoMori.jpeg" alt="Logo Mori Magazine">
+    </nav>
+
+    <div class="hero">
+        <h1>Mori Magazine</h1>
+        <p>Descubra a sofisticação em cada detalhe.</p>
     </div>
 
-    <!-- Botão para Lista de Transações -->
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6">
-            <a href="/transacao/listar" class="btn btn-primary btn-lg btn-block">Lista de Transações</a>
+    <div class="container mt-4">
+        <div class="d-flex flex-wrap justify-content-center">
+            <a href="/clientes/listar" class="btn btn-custom">Gerenciamento de Clientes</a>
+            <a href="/produto/listar" class="btn btn-custom">Gerenciamento de Produtos</a>
+            <a href="/transacao/listar" class="btn btn-custom">Lista de Transações</a>
+            <a href="/transacao/criarForm" class="btn btn-custom">Registrar Venda</a>
         </div>
     </div>
 
-    <!-- Botão para Registro de Venda -->
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6">
-            <a href="/transacao/criarForm" class="btn btn-primary btn-lg btn-block">Registrar Venda</a>
-        </div>
-    </div>
+    <footer class="footer text-center mt-5">
+        <p>&copy; 2024 Mori Magazine. Todos os direitos reservados.</p>
+    </footer>
 
-</div>
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para alternar entre temas claro e escuro -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const lightModeBtn = document.getElementById('light-mode-btn');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            const body = document.body;
+
+            // Carrega o tema salvo no localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                body.classList.add(savedTheme);
+            }
+
+            // Função para alternar para o modo claro
+            lightModeBtn.addEventListener('click', function() {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light-mode');
+
+                // Faz uma solicitação ao backend para salvar a preferência
+                $.ajax({
+                    url: '/preferencia/escolher',
+                    method: 'GET',
+                    data: { estilo: 'claro' },
+                    success: function() {
+                        location.reload();  // Recarrega a página para aplicar o novo tema
+                    }
+                });
+            });
+
+            // Função para alternar para o modo escuro
+            darkModeBtn.addEventListener('click', function() {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+
+                // Faz uma solicitação ao backend para salvar a preferência
+                $.ajax({
+                    url: '/preferencia/escolher',
+                    method: 'GET',
+                    data: { estilo: 'escuro' },
+                    success: function() {
+                        location.reload();  // Recarrega a página para aplicar o novo tema
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

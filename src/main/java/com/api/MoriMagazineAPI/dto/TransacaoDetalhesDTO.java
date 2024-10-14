@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class TransacaoDetalhesDTO {
     private String clienteNome;
-    private Long clienteId;
+    private Long clienteId; // Certifique-se de que o tipo aqui seja Long
     private List<ProdutoDetalhesDTO> produtos;
     private BigDecimal subtotal;
     private String formaPagamento;
@@ -25,7 +25,7 @@ public class TransacaoDetalhesDTO {
 
     public TransacaoDetalhesDTO(TransacaoEntity transacao) {
         this.clienteNome = transacao.getCliente().getNome();
-        this.clienteId = transacao.getCliente().getId();
+        this.clienteId = transacao.getCliente().getId().longValue(); // Conversão explícita para Long
         this.produtos = transacao.getItens().stream()
                 .map(ProdutoDetalhesDTO::new)
                 .collect(Collectors.toList());

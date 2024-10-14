@@ -6,7 +6,6 @@ import com.api.MoriMagazineAPI.data.StatusParcela;
 import com.api.MoriMagazineAPI.data.TransacaoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ public class ParcelaService {
      * @param id ID da parcela.
      * @return Um Optional contendo a parcela encontrada, ou vazio se não encontrada.
      */
-    public Optional<ParcelaEntity> findById(Long id) {
+    public Optional<ParcelaEntity> findById(Integer id) { // Alterado para Integer
         return parcelaRepository.findById(id);
     }
 
@@ -55,7 +54,7 @@ public class ParcelaService {
      *
      * @param parcelaId O ID da parcela a ser baixada.
      */
-    public void baixarParcela(Long parcelaId) {
+    public void baixarParcela(Integer parcelaId) { // Alterado para Integer
         ParcelaEntity parcela = parcelaRepository.findById(parcelaId)
                 .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
         
@@ -69,22 +68,16 @@ public class ParcelaService {
      *
      * @param parcelaId O ID da parcela para a qual o comprovante será enviado.
      */
-    public void enviarComprovantePagamento(Long parcelaId) {
+    public void enviarComprovantePagamento(Integer parcelaId) { // Alterado para Integer
         ParcelaEntity parcela = parcelaRepository.findById(parcelaId)
                 .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
 
-        // Verificar se a parcela foi baixada (está com status PAGO)
         if (parcela.getStatus() != StatusParcela.PAGO) {
             throw new IllegalStateException("Não é possível enviar o comprovante para parcelas não baixadas.");
         }
 
-        // Criar a mensagem do comprovante de pagamento
         String mensagem = criarMensagemComprovante(parcela.getTransacao());
-
-        // Obter detalhes do cliente e da transação
         String telefoneCliente = parcela.getTransacao().getCliente().getTelefone();
-
-        // Implementar lógica para enviar mensagem por WhatsApp
         enviarMensagemWhatsApp(telefoneCliente, mensagem);
     }
 
@@ -99,7 +92,6 @@ public class ParcelaService {
         mensagem.append("Detalhes da Compra\n");
         mensagem.append("Data da Compra: ").append(transacao.getDataTransacao()).append("\n");
         mensagem.append("Cliente: ").append(transacao.getCliente().getNome()).append("\n\n");
-
         mensagem.append("Parcelas:\n");
         for (ParcelaEntity parcela : transacao.getParcelas()) {
             mensagem.append("Data de Vencimento: ").append(parcela.getDataVencimento())
@@ -107,7 +99,6 @@ public class ParcelaService {
                     .append(" - Status: ").append(parcela.getStatus())
                     .append("\n");
         }
-
         mensagem.append("\nObrigado pela compra! Se houver alguma dúvida, entre em contato.");
         return mensagem.toString();
     }
@@ -119,7 +110,6 @@ public class ParcelaService {
      * @param mensagem A mensagem a ser enviada.
      */
     private void enviarMensagemWhatsApp(String telefoneCliente, String mensagem) {
-        // Lógica para enviar a mensagem via WhatsApp
         String url = "https://wa.me/" + telefoneCliente + "?text=" + java.net.URLEncoder.encode(mensagem, java.nio.charset.StandardCharsets.UTF_8);
         System.out.println("URL para enviar mensagem: " + url);
     }

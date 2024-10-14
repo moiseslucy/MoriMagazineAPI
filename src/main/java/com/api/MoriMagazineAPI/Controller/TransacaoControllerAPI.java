@@ -1,4 +1,4 @@
-package com.api.MoriMagazineAPI.controller;
+/*package com.api.MoriMagazineAPI.controller;
 
 import com.api.MoriMagazineAPI.data.TransacaoEntity;
 import com.api.MoriMagazineAPI.service.TransacaoService;
@@ -64,3 +64,4 @@ public ResponseEntity<TransacaoEntity> criarTransacao(@RequestBody TransacaoEnti
         return ResponseEntity.noContent().build();
     }
 }
+*/

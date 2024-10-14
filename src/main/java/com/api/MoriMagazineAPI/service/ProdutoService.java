@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class ProdutoService {
-
     private final ProdutoRepository produtoRepository;
 
     @Autowired
@@ -20,21 +20,12 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public List<ProdutoEntity> getProdutosByIds(List<Long> produtoIds) {
-        return produtoRepository.findAllById(produtoIds);
-    }
-
     public ProdutoEntity criarProduto(ProdutoEntity produto) {
         produto.setId(null);
         return produtoRepository.save(produto);
     }
 
-    public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
-        produtos.forEach(produto -> produto.setId(null));
-        return produtoRepository.saveAll(produtos);
-    }
-
-    public ProdutoEntity atualizarProduto(Long produtoId, ProdutoEntity produtoRequest) {
+    public ProdutoEntity atualizarProduto(Integer produtoId, ProdutoEntity produtoRequest) {
         ProdutoEntity produto = getProdutoId(produtoId);
         if (produtoRequest.getNomeProduto() != null && !produtoRequest.getNomeProduto().isEmpty()) {
             produto.setNomeProduto(produtoRequest.getNomeProduto());
@@ -51,61 +42,78 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public ProdutoEntity getProdutoId(Long produtoId) {
+    public ProdutoEntity getProdutoId(Integer produtoId) {
         return produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado " + produtoId));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoId));
     }
 
     public List<ProdutoEntity> listarTodosProdutos() {
         return produtoRepository.findAll();
     }
 
-    public void deletarProduto(Long produtoId) {
+    public void deletarProduto(Integer produtoId) {
         ProdutoEntity produto = getProdutoId(produtoId);
         produtoRepository.delete(produto);
     }
 
     public List<ProdutoEntity> getProdutoPorNome(String nomeProduto) {
-        return produtoRepository.findByNomeProdutoContaining(nomeProduto);
+        return produtoRepository.findByNomeProdutoContainingIgnoreCase(nomeProduto);
     }
 
     public ProdutoEntity salvarProduto(ProdutoEntity produto) {
         return produtoRepository.save(produto);
     }
 
-    public void atualizarNomeProduto(Long id, String nomeProduto) {
-        ProdutoEntity produto = getProdutoId(id);
-        produto.setNomeProduto(nomeProduto);
-        produtoRepository.save(produto);
-    }
-
-    public void atualizarPrecoProduto(Long id, BigDecimal preco) {
-        ProdutoEntity produto = getProdutoId(id);
-        produto.setPreco(preco);
-        produtoRepository.save(produto);
-    }
-
-    public void atualizarDataCompraProduto(Long id, LocalDate dataCompra) {
-        ProdutoEntity produto = getProdutoId(id);
-        produto.setDataCompra(dataCompra);
-        produtoRepository.save(produto);
-    }
-
-    public void atualizarQuantidadeProduto(Long id, Integer quantidade) {
-        ProdutoEntity produto = getProdutoId(id);
-        produto.setQuantidade(quantidade);
-        produtoRepository.save(produto);
-    }
-
-    public List<ProdutoEntity> listarProdutos() {
-        return produtoRepository.findAll();
-    }
-
-    public List<ProdutoEntity> listarProdutosPorIds(List<Long> ids) {
+    public List<ProdutoEntity> listarProdutosPorIds(List<Integer> ids) {
         return produtoRepository.findAllById(ids);
     }
 
-    public BigDecimal calcularValorTotal(List<Long> produtosSelecionados) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public BigDecimal calcularValorTotal(List<Integer> produtosSelecionados) {
+        return produtoRepository.findAllById(produtosSelecionados).stream()
+                .map(ProdutoEntity::getPreco)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Integer getQuantidadeRestante(ProdutoEntity produto) {
+        return produto.getQuantidade();
+    }
+
+    public List<ProdutoEntity> criarProdutos(List<ProdutoEntity> produtos) {
+        produtos.forEach(produto -> produto.setId(null)); // Configura o ID como null para garantir criação de novos
+        return produtoRepository.saveAll(produtos);
+    }
+
+    public void vender(ProdutoEntity produto, int quantidadeVendida) {
+        if (produto.getQuantidade() >= quantidadeVendida) {
+            produto.setQuantidade(produto.getQuantidade() - quantidadeVendida);
+            produtoRepository.save(produto);
+        } else {
+            throw new IllegalArgumentException("Quantidade vendida maior que a disponível em estoque.");
+        }
+    }
+
+    // Método para pesquisar produtos por termo (ID ou nome)
+    public List<ProdutoEntity> pesquisarProdutos(String termo) {
+        if (isNumeric(termo)) {
+            Integer id = Integer.valueOf(termo);
+            return produtoRepository.findById(id)
+                    .map(Collections::singletonList)
+                    .orElse(Collections.emptyList());
+        } else {
+            return produtoRepository.findByNomeProdutoContainingIgnoreCase(termo);
+        }
+    }
+
+    // Método auxiliar para verificar se o termo é numérico
+    private boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 }

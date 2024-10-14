@@ -4,13 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ParcelaRepository extends JpaRepository<ParcelaEntity, Long> {
-    List<ParcelaEntity> findByTransacaoId(Long transacaoId);
+public interface ParcelaRepository extends JpaRepository<ParcelaEntity, Integer> { // Alterado para Integer
+
+    List<ParcelaEntity> findByTransacaoId(Integer transacaoId); // Alterado para Integer
 
     @Query("SELECT p FROM ParcelaEntity p WHERE p.dataVencimento = :dataVencimento AND p.status = 'PENDENTE'")
     List<ParcelaEntity> findPendentesByDataVencimento(@Param("dataVencimento") LocalDate dataVencimento);
@@ -29,4 +30,6 @@ public interface ParcelaRepository extends JpaRepository<ParcelaEntity, Long> {
 
     @Query("SELECT p FROM ParcelaEntity p WHERE p.dataVencimento < :dataAtual AND p.status = 'PENDENTE'")
     List<ParcelaEntity> findParcelasAtrasadas(@Param("dataAtual") LocalDate dataAtual);
+
+    Optional<ParcelaEntity> findById(Integer id); // Alterado para Integer
 }

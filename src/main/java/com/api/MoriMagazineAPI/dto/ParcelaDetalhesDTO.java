@@ -3,14 +3,12 @@ package com.api.MoriMagazineAPI.dto;
 import com.api.MoriMagazineAPI.data.StatusParcela;
 import com.api.MoriMagazineAPI.data.ParcelaEntity;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
 public class ParcelaDetalhesDTO {
-
-    private Long id; // Certifique-se de que este campo está presente
+    private Integer id; // Alterado para Integer para consistência
     private BigDecimal valorParcela;
     private LocalDate dataVencimento;
     private StatusParcela status;

@@ -1,6 +1,5 @@
 package com.api.MoriMagazineAPI.data;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,23 +8,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.ToString;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
 @Table(name = "transacao")
 public class TransacaoEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", referencedColumnName = "id")
@@ -56,24 +53,25 @@ public class TransacaoEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataVencimento;
 
-    @ElementCollection
-    private List<Long> produtosIds = new ArrayList<>();
-
     @OneToMany(mappedBy = "transacao", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference // Evita loop infinito na serialização
+    @ToString.Exclude
     private List<ParcelaEntity> parcelas = new ArrayList<>();
 
     @OneToMany(mappedBy = "transacao", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference // Evita loop infinito na serialização
+    @ToString.Exclude
+    
     private List<ItemTransacao> itens = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
-        name = "transacao_produto", 
-        joinColumns = @JoinColumn(name = "transacao_id"), 
+        name = "transacao_produto",
+        joinColumns = @JoinColumn(name = "transacao_id"),
         inverseJoinColumns = @JoinColumn(name = "produto_id"))
     private List<ProdutoEntity> produtos = new ArrayList<>();
 
+    // Construtor para inicialização rápida
     public TransacaoEntity(ClienteEntity cliente, BigDecimal valorTotal, LocalDate dataTransacao, String formaPagamento) {
         this.cliente = cliente;
         this.valorTotal = valorTotal;
@@ -92,35 +90,21 @@ public class TransacaoEntity {
         criarParcelas(valorTotal, numeroParcelas, dataVencimento);
     }
 
-    public void criarParcelas(BigDecimal valorTotal, int numeroParcelas, LocalDate dataVencimento) {
+    private void criarParcelas(BigDecimal valorTotal, int numeroParcelas, LocalDate dataVencimento) {
         if (dataVencimento == null) {
             throw new IllegalArgumentException("A data de vencimento não pode ser nula");
         }
         BigDecimal valorParcela = valorTotal.divide(new BigDecimal(numeroParcelas), 2, RoundingMode.HALF_UP);
         for (int i = 0; i < numeroParcelas; i++) {
-            ParcelaEntity parcela = new ParcelaEntity(this, valorParcela, dataVencimento.plusMonths(i), StatusParcela.PENDENTE, valorTotal);
+            ParcelaEntity parcela = new ParcelaEntity(this, valorParcela, dataVencimento.plusMonths(i), StatusParcela.PENDENTE);
             parcelas.add(parcela);
         }
     }
 
-    public Integer getNumeroParcelas() {
-        return numeroParcelas;
-    }
-
-    public LocalDate getDataVencimento() {
-        return dataVencimento;
-    }
-
-    public List<Long> getProdutosIds() {
-        return produtos.stream().map(ProdutoEntity::getId).collect(Collectors.toList());
-    }
-
-    public void setProdutos(List<ProdutoEntity> produtos) {
-        this.produtos = produtos;
-        this.produtosIds = produtos.stream().map(ProdutoEntity::getId).collect(Collectors.toList());
-    }
-
-    public void setProdutosIds(List<Long> produtosIds) {
-        this.produtosIds = produtosIds;
+    public void setClienteId(Integer clienteId) {
+        if (this.cliente == null) {
+            this.cliente = new ClienteEntity();
+        }
+        this.cliente.setId(clienteId);
     }
 }

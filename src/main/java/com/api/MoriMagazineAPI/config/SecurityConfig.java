@@ -26,28 +26,36 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/css/**", "/js/**", "/imagens/**", "/favicon.ico").permitAll() // Acesso público à página inicial e recursos estáticos
-                .requestMatchers("/login", "/register", "/forgot-password", "/reset-password").permitAll() // Acesso público para login, registro e recuperação de senha
-                .anyRequest().authenticated() // Exige autenticação para outros endpoints
+                // Permitir acesso público a páginas e recursos públicos específicos
+                .requestMatchers("/", "/css/**", "/js/**", "/imagens/**", "/favicon.ico", "/error", "/login", "/register", "/forgot-password", "/reset-password").permitAll()
+
+                // Permitir todas as requisições para endpoints de API (Postman) sem autenticação
+                .requestMatchers("/api/**", "/produto/api/**", "/cliente/api/**", "/transacao/api/**").permitAll()
+
+                // Exigir autenticação para todos os outros endpoints web
+                .anyRequest().authenticated()
             )
+            // Configuração para Basic Auth e formLogin
+            .httpBasic(httpBasic -> httpBasic.realmName("API Realm"))
             .formLogin(form -> form
-                .loginPage("/login") // Página de login personalizada
-                .defaultSuccessUrl("/", true) // Redireciona para a página inicial após login bem-sucedido
+                .loginPage("/login")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout") // Redireciona após logout
+                .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable()) // Desabilitar CSRF temporariamente para desenvolvimento
-            .addFilterBefore(cspFilter(), UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro CSP na cadeia de segurança
+            // Desativar CSRF globalmente para facilitar o acesso via API
+            .csrf(csrf -> csrf.disable())
+            .addFilterBefore(cspFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Codificador de senha
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -61,7 +69,7 @@ public class SecurityConfig {
                     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; " +
                     "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; " +
                     "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-                    "img-src 'self' data: https://cdn-icons-png.flaticon.com; " + // Permitir imagens inline e do mesmo domínio, além do Flaticon
+                    "img-src 'self' data: https://cdn-icons-png.flaticon.com; " +
                     "connect-src 'self'; " +
                     "frame-ancestors 'self'; " +
                     "base-uri 'self'; " +
@@ -70,14 +78,10 @@ public class SecurityConfig {
             }
 
             @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
-                // Inicialização do filtro, se necessário
-            }
+            public void init(FilterConfig filterConfig) throws ServletException {}
 
             @Override
-            public void destroy() {
-                // Limpeza do filtro, se necessário
-            }
+            public void destroy() {}
         };
     }
 }

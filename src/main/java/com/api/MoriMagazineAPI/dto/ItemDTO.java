@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ItemDTO {
     @NotNull
-    private Long produtoId;
+    private Integer produtoId; // Alterado para Integer
 
     @NotNull
     private int quantidade;

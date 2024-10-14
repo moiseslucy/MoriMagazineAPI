@@ -14,32 +14,25 @@ import java.util.stream.Collectors;
 
 @Data
 public class TransacaoDTO {
-
+    
     @NotNull
-    private Long clienteId;
-
+    private Integer clienteId; // Alterado para Integer
     @NotNull
     private List<ItemDTO> itens;
-
     @NotNull
     private String status;
-
     @NotNull
     private LocalDate dataTransacao;
-
     @NotNull
     private String formaPagamento;
-
     private List<ParcelaDTO> parcelas;
-
     private LocalDate dataVencimento;
-
     private Integer numeroParcelas;
 
     // Método para converter para entidade
     public TransacaoEntity toTransacaoEntity(ProdutoService produtoService) {
         TransacaoEntity transacaoEntity = new TransacaoEntity();
-        transacaoEntity.setClienteId(this.clienteId);
+        transacaoEntity.setClienteId(this.clienteId); // Utilizando Integer para clienteId
         transacaoEntity.setStatus(this.status);
         transacaoEntity.setDataTransacao(this.dataTransacao);
         transacaoEntity.setFormaPagamento(this.formaPagamento);
@@ -56,10 +49,11 @@ public class TransacaoDTO {
             itemTransacao.setTransacao(transacaoEntity); 
             return itemTransacao;
         }).collect(Collectors.toList());
+
         transacaoEntity.setItens(itensTransacao);
 
+        // Configura as parcelas apenas para pagamentos a prazo
         if ("Crediário".equals(this.formaPagamento) || "Cartão de Crédito".equals(this.formaPagamento)) {
-            // Converte as parcelas de ParcelaDTO para ParcelaEntity e adiciona na entidade
             List<ParcelaEntity> parcelasEntity = this.parcelas.stream().map(parcelaDTO -> {
                 ParcelaEntity parcelaEntity = new ParcelaEntity();
                 parcelaEntity.setTransacao(transacaoEntity);
@@ -74,5 +68,9 @@ public class TransacaoDTO {
         }
 
         return transacaoEntity;
+    }
+
+    public Integer getClienteId() {
+        return clienteId;
     }
 }

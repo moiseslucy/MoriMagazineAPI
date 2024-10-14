@@ -25,17 +25,16 @@ public String viewClientes(Model model) {
     model.addAttribute("listarClientes", clienteService.listarTodosClientes());
     return "index";
 }
-
-   @GetMapping("/deletar/{id}")
+@GetMapping("/deletar/{id}")
 public String mostrarFormularioExclusaoCliente(@PathVariable(value = "id") Integer id, Model model) {
-    ClienteEntity cliente = clienteService.getClienteId(id);
+    ClienteEntity cliente = clienteService.getClienteById(id); // Substituído por getClienteById
     if (cliente == null) {
         return "redirect:/clientes/listar";
     }
     model.addAttribute("cliente", cliente);
     return "ConfirmarExclusaoCliente";
 }
-
+   
 @PostMapping("/deletar/{id}")
 public String deletarCliente(@PathVariable(value = "id") Integer id) {
     clienteService.deletarCliente(id);
@@ -63,13 +62,13 @@ public String salvarCliente(@Valid @ModelAttribute("cliente") ClienteEntity clie
     return "redirect:/clientes/listar";
 }
 
-
-    @GetMapping("/atualizarForm/{id}")
-    public String atualizarClienteForm(@PathVariable(value = "id") Integer id, Model model) {
-        ClienteEntity cliente = clienteService.getClienteId(id);
-        model.addAttribute("cliente", cliente);
-        return "atualizar";
-    }
+@GetMapping("/atualizarForm/{id}")
+public String atualizarClienteForm(@PathVariable(value = "id") Integer id, Model model) {
+    ClienteEntity cliente = clienteService.getClienteById(id); // Substituído por getClienteById
+    model.addAttribute("cliente", cliente);
+    return "atualizar";
+}
+    
 
    @PostMapping("/atualizar")
 public String atualizarCliente(@Valid @ModelAttribute("cliente") ClienteEntity cliente, BindingResult result) {

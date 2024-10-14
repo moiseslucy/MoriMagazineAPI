@@ -25,7 +25,7 @@ public class ClienteControllerPostmanAPI {
 
     @GetMapping("/pesquisar/{id}")
     public ResponseEntity<ClienteEntity> getClienteById(@PathVariable Integer id) {
-        ClienteEntity cliente = clienteService.getClienteId(id);
+        ClienteEntity cliente = clienteService.getClienteById(id); // Substituído por getClienteById
         return new ResponseEntity<>(cliente, HttpStatus.OK);
     }
 
@@ -42,10 +42,10 @@ public class ClienteControllerPostmanAPI {
     }
 
     @PostMapping("/adicionar-lote")
-public ResponseEntity<List<ClienteEntity>> addClientes(@Valid @RequestBody List<ClienteEntity> clientes) {
-    List<ClienteEntity> novosClientes = clienteService.criarClientes(clientes);
-    return ResponseEntity.status(HttpStatus.CREATED).body(novosClientes);
-}
+    public ResponseEntity<List<ClienteEntity>> addClientes(@Valid @RequestBody List<ClienteEntity> clientes) {
+        List<ClienteEntity> novosClientes = clienteService.criarClientes(clientes);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novosClientes);
+    }
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<ClienteEntity> atualizarCliente(@PathVariable Integer id, @RequestBody ClienteEntity cliente) {

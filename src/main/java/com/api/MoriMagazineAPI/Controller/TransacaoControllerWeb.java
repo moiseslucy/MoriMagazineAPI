@@ -8,7 +8,7 @@ import com.api.MoriMagazineAPI.data.StatusParcela;
 import com.api.MoriMagazineAPI.dto.ParcelaDetalhesDTO;
 import com.api.MoriMagazineAPI.dto.TransacaoDetalhesDTO;
 import com.api.MoriMagazineAPI.dto.TransacaoDTO;
-import com.api.MoriMagazineAPI.dto.ItemDTO; // Importação correta do ItemDTO
+import com.api.MoriMagazineAPI.dto.ItemDTO;
 import com.api.MoriMagazineAPI.service.ClienteService;
 import com.api.MoriMagazineAPI.service.ParcelaService;
 import com.api.MoriMagazineAPI.service.ProdutoService;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
 public class TransacaoControllerWeb {
 
     private static final Logger logger = LoggerFactory.getLogger(TransacaoControllerWeb.class);
+
     private final TransacaoService transacaoService;
     private final ClienteService clienteService;
     private final ProdutoService produtoService;
@@ -51,129 +51,122 @@ public class TransacaoControllerWeb {
         this.parcelaService = parcelaService;
     }
 
-    @GetMapping("/listar")
-    public String viewTransacoesPage(@RequestParam(value = "mes", required = false) Integer mes,
-            @RequestParam(value = "ano", required = false) Integer ano,
-            @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
-            @RequestParam(value = "formaPagamento", required = false) String formaPagamento,
-            Model model) {
-        try {
-            List<TransacaoEntity> transacoes;
-            if (mes != null && ano != null) {
-                transacoes = transacaoService.listarTransacoesPorMesAnoFormaPagamento(mes, ano, formaPagamento);
-            } else if (nomeCliente != null && !nomeCliente.isEmpty()) {
-                transacoes = transacaoService.listarTransacoesPorNomeCliente(nomeCliente);
-            } else {
-                transacoes = transacaoService.listarTodasTransacoes();
+   @GetMapping("/listar")
+public String viewTransacoesPage(@RequestParam(value = "mes", required = false) Integer mes,
+                                 @RequestParam(value = "ano", required = false) Integer ano,
+                                 @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
+                                 @RequestParam(value = "formaPagamento", required = false) String formaPagamento,
+                                 Model model) {
+    try {
+        List<TransacaoEntity> transacoes;
+        if (mes != null && ano != null) {
+            transacoes = transacaoService.listarTransacoesPorMesAnoFormaPagamento(mes, ano, formaPagamento);
+        } else if (nomeCliente != null && !nomeCliente.isEmpty()) {
+            transacoes = transacaoService.listarTransacoesPorNomeCliente(nomeCliente);
+        } else {
+            transacoes = transacaoService.listarTodasTransacoes();
+        }
+        
+        for (TransacaoEntity transacao : transacoes) {
+            int parcelasPagas = (int) transacao.getParcelas().stream()
+                    .filter(parcela -> parcela.getStatus() == StatusParcela.PAGO)
+                    .count();
+            for (ParcelaEntity parcela : transacao.getParcelas()) {
+                parcela.setRestantes(transacao.getParcelas().size() - parcelasPagas);
             }
+        }
+        
+        model.addAttribute("transacoes", transacoes);
+    } catch (Exception e) {
+        model.addAttribute("errorMessage", "Erro ao carregar as transações.");
+    }
+    return "indexTransacoes";
+}
 
-            // Calcula o número de parcelas restantes para cada parcela
-            for (TransacaoEntity transacao : transacoes) {
-                long parcelasPagas = transacao.getParcelas().stream()
-                        .filter(parcela -> parcela.getStatus() == StatusParcela.PAGO)
-                        .count();
-                for (ParcelaEntity parcela : transacao.getParcelas()) {
-                    parcela.setRestantes(transacao.getParcelas().size() - parcelasPagas);
+    @PostMapping("/salvarTransacao")
+    @ResponseBody
+    public ResponseEntity<?> salvarTransacao(@Valid @ModelAttribute TransacaoDTO transacaoDTO,
+                                             BindingResult bindingResult,
+                                             RedirectAttributes redirectAttributes,
+                                             Model model,
+                                             HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder("Erro de validação: ");
+            bindingResult.getAllErrors().forEach(error -> errorMessages.append(error.getDefaultMessage()).append("; "));
+            model.addAttribute("clientes", clienteService.listarTodosClientes());
+            model.addAttribute("produtos", produtoService.listarTodosProdutos());
+            return ResponseEntity.badRequest().body(errorMessages.toString());
+        }
+        logger.debug("Dados da transação recebidos: {}", transacaoDTO);
+        TransacaoEntity transacao = transacaoDTO.toTransacaoEntity(produtoService);
+        transacao.setDataTransacao(LocalDate.now());
+
+        String formaPagamento = transacao.getFormaPagamento().toLowerCase();
+        if (formaPagamento.equals("dinheiro") || formaPagamento.equals("cartao de debito") || formaPagamento.equals("pix") || formaPagamento.equals("cartao de credito")) {
+            transacao.setStatus("Pago");
+        } else {
+            transacao.setStatus("Pendente");
+        }
+
+        for (ItemDTO item : transacaoDTO.getItens()) {
+ProdutoEntity produto = produtoService.getProdutoId(item.getProdutoId());
+            if (produto != null) {
+                if (produto.getQuantidadeRestante() < item.getQuantidade()) {
+                    String errorMessage = "A quantidade vendida para o produto " + produto.getNomeProduto() + " excede o estoque disponível. Quantidade em estoque: " + produto.getQuantidadeRestante();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
                 }
+                produto.vender(item.getQuantidade());
+                produtoService.salvarProduto(produto);
             }
-
-            model.addAttribute("transacoes", transacoes);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Erro ao carregar as transações.");
         }
-        return "indexTransacoes";
-    }
-@PostMapping("/salvarTransacao")
-@ResponseBody
-public ResponseEntity<?> salvarTransacao(@Valid @ModelAttribute TransacaoDTO transacaoDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model, HttpServletRequest request) {
-    if (bindingResult.hasErrors()) {
-        StringBuilder errorMessages = new StringBuilder("Erro de validação: ");
-        bindingResult.getAllErrors().forEach(error -> errorMessages.append(error.getDefaultMessage()).append("; "));
-        model.addAttribute("clientes", clienteService.listarTodosClientes());
-        model.addAttribute("produtos", produtoService.listarTodosProdutos());
-        return ResponseEntity.badRequest().body(errorMessages.toString());
-    }
 
-    logger.debug("Dados da transação recebidos: {}", transacaoDTO);
-    TransacaoEntity transacao = transacaoDTO.toTransacaoEntity(produtoService);
-    transacao.setDataTransacao(LocalDate.now());
+        transacaoService.criarTransacaoWeb(transacao, transacaoDTO.getClienteId(),
+                transacaoDTO.getItens().stream().map(ItemDTO::getQuantidade).collect(Collectors.toList()));
+        logger.debug("Transação criada: {}", transacao);
 
-    // Definindo o status com base na forma de pagamento
-    String formaPagamento = transacao.getFormaPagamento().toLowerCase();
-    if (formaPagamento.equals("dinheiro") || formaPagamento.equals("cartao de debito") || formaPagamento.equals("pix") || formaPagamento.equals("cartao de credito")) {
-        transacao.setStatus("Pago");
-    } else {
-        transacao.setStatus("Pendente");
+        String enviarWhatsApp = request.getParameter("enviarWhatsApp");
+        if ("true".equalsIgnoreCase(enviarWhatsApp)) {
+            String mensagem = construirMensagemWhatsApp(transacaoDTO, transacao);
+            logger.debug("Mensagem de WhatsApp: {}", mensagem);
+            return ResponseEntity.ok("Resumo enviado via WhatsApp!");
+        }
+
+        if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+            return ResponseEntity.ok("Transação registrada com sucesso!");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Transação registrada com sucesso!");
+            return ResponseEntity.status(303).header("Location", "/transacao/listar").build();
+        }
     }
 
-    // Verificar estoque para cada item da transação
-    for (ItemDTO item : transacaoDTO.getItens()) {
-        ProdutoEntity produto = produtoService.buscarProdutoPorId(item.getProdutoId());
-        if (produto != null) {
-            if (produto.getQuantidadeRestante() < item.getQuantidade()) {
-                String errorMessage = "A quantidade vendida para o produto " + produto.getNomeProduto() + " excede o estoque disponível. Quantidade em estoque: " + produto.getQuantidadeRestante();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEntity transacao) {
+        String produtos = transacaoDTO.getItens().stream()
+                .map(item -> {
+                ProdutoEntity produto = produtoService.getProdutoId(item.getProdutoId());
+                    return String.format("%s (%d x R$%.2f)", produto.getNomeProduto(), item.getQuantidade(), produto.getPreco());
+                })
+                .collect(Collectors.joining(", "));
+        StringBuilder mensagem = new StringBuilder();
+        mensagem.append("🛍️ *Resumo da Venda* 🛍️\n");
+        mensagem.append(String.format("*Cliente:* %s (ID: %d)\n", transacao.getCliente().getNome(), transacao.getCliente().getId()));
+        mensagem.append(String.format("*Produtos:* %s\n", produtos));
+        mensagem.append(String.format("*Subtotal:* R$ %.2f\n", transacao.getValorTotal()));
+        mensagem.append(String.format("*Forma de Pagamento:* %s\n", transacao.getFormaPagamento()));
+
+        if ("Crediário".equals(transacao.getFormaPagamento()) || "Cartão de Crédito".equals(transacao.getFormaPagamento())) {
+            mensagem.append("*Parcelamento:* ");
+            for (ParcelaEntity parcela : transacao.getParcelas()) {
+                mensagem.append(String.format("Parcela de R$ %.2f com vencimento em %s\n", parcela.getValorParcela(), parcela.getDataVencimento()));
             }
-            produto.vender(item.getQuantidade());
-            produtoService.salvarProduto(produto);
+        } else {
+            mensagem.append("*Parcelamento:* À vista\n");
         }
+        mensagem.append(String.format("*Data da Compra:* %s\n", transacao.getDataTransacao()));
+        mensagem.append(String.format("*Total:* R$ %.2f\n", transacao.getValorTotal()));
+        mensagem.append("\nAgradecemos pela sua preferência! 😊");
+        return mensagem.toString();
     }
 
-    // Criar a transação e associar itens e parcelas, se aplicável
-    transacaoService.criarTransacaoWeb(transacao, transacaoDTO.getClienteId(), transacaoDTO.getItens().stream().map(ItemDTO::getQuantidade).collect(Collectors.toList()));
-    logger.debug("Transação criada: {}", transacao);
-
-    // Enviar resumo da transação pelo WhatsApp se solicitado
-    String enviarWhatsApp = request.getParameter("enviarWhatsApp");
-    if ("true".equalsIgnoreCase(enviarWhatsApp)) {
-        String mensagem = construirMensagemWhatsApp(transacaoDTO, transacao);
-        // Lógica para enviar mensagem (simulação de envio)
-        logger.debug("Mensagem de WhatsApp: {}", mensagem);
-        // Aqui você pode implementar a lógica para abrir o link do WhatsApp
-        return ResponseEntity.ok("Resumo enviado via WhatsApp!");
-    }
-
-    // Resposta padrão após salvar a transação
-    if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
-        return ResponseEntity.ok("Transação registrada com sucesso!");
-    } else {
-        redirectAttributes.addFlashAttribute("message", "Transação registrada com sucesso!");
-        return ResponseEntity.status(303).header("Location", "/transacao/listar").build();
-    }
-}
-
-// Método para construir a mensagem de WhatsApp
-private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEntity transacao) {
-    String produtos = transacaoDTO.getItens().stream()
-            .map(item -> {
-                ProdutoEntity produto = produtoService.buscarProdutoPorId(item.getProdutoId());
-                return String.format("%s (%d x R$%.2f)", produto.getNomeProduto(), item.getQuantidade(), produto.getPreco());
-            })
-            .collect(Collectors.joining(", "));
-
-    StringBuilder mensagem = new StringBuilder();
-    mensagem.append("🛍️ *Resumo da Venda* 🛍️\n");
-    mensagem.append(String.format("*Cliente:* %s (ID: %d)\n", transacao.getCliente().getNome(), transacao.getCliente().getId()));
-    mensagem.append(String.format("*Produtos:* %s\n", produtos));
-    mensagem.append(String.format("*Subtotal:* R$ %.2f\n", transacao.getValorTotal()));
-    mensagem.append(String.format("*Forma de Pagamento:* %s\n", transacao.getFormaPagamento()));
-    
-    if ("Crediário".equals(transacao.getFormaPagamento()) || "Cartão de Crédito".equals(transacao.getFormaPagamento())) {
-        mensagem.append("*Parcelamento:* ");
-        for (ParcelaEntity parcela : transacao.getParcelas()) {
-            mensagem.append(String.format("Parcela de R$ %.2f com vencimento em %s\n", parcela.getValorParcela(), parcela.getDataVencimento()));
-        }
-    } else {
-        mensagem.append("*Parcelamento:* À vista\n");
-    }
-
-    mensagem.append(String.format("*Data da Compra:* %s\n", transacao.getDataTransacao()));
-    mensagem.append(String.format("*Total:* R$ %.2f\n", transacao.getValorTotal()));
-    mensagem.append("\nAgradecemos pela sua preferência! 😊");
-
-    return mensagem.toString();
-}
-  
     @GetMapping("/criarForm")
     public String criarTransacaoForm(Model model) {
         logger.debug("Abrindo formulário de criação de transação");
@@ -230,7 +223,7 @@ private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEnt
     }
 
     @GetMapping("/detalhes/{id}")
-    public String viewTransacaoDetalhes(@PathVariable Long id, Model model) {
+    public String viewTransacaoDetalhes(@PathVariable Integer id, Model model) { // Ajuste para Integer
         Optional<TransacaoEntity> transacaoOpt = transacaoService.getTransacaoById(id);
         if (transacaoOpt.isPresent()) {
             TransacaoEntity transacao = transacaoOpt.get();
@@ -244,7 +237,7 @@ private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEnt
     }
 
     @GetMapping("/detalhesParcela/{id}")
-    public String viewParcelaDetalhes(@PathVariable Long id, Model model) {
+    public String viewParcelaDetalhes(@PathVariable Integer id, Model model) { // Ajuste para Integer
         ParcelaEntity parcela = parcelaService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
         ParcelaDetalhesDTO parcelaDetalhesDTO = new ParcelaDetalhesDTO(parcela);
@@ -261,33 +254,23 @@ private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEnt
 
     @PostMapping("/baixar-parcela/{id}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> baixarParcela(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> baixarParcela(@PathVariable Integer id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Buscar a parcela pelo ID
             ParcelaEntity parcela = parcelaService.findById(id)
                     .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
-
-            // Atualizar o status da parcela para PAGO
             parcela.setStatus(StatusParcela.PAGO);
-            parcelaService.save(parcela);  // Salvar a parcela com o status atualizado
-
-            // Obter a transação associada
+            parcelaService.save(parcela);
             TransacaoEntity transacao = parcela.getTransacao();
-
-            // Verificar se todas as parcelas da transação estão pagas
             boolean todasPagas = transacao.getParcelas().stream()
                     .allMatch(p -> p.getStatus() == StatusParcela.PAGO);
             if (todasPagas) {
                 transacao.setStatus("Pago");
-                transacaoService.atualizarTransacao(transacao.getId(), transacao);  // Atualizar a transação
+                transacaoService.atualizarTransacao(transacao.getId(), transacao);
             }
-
-            // Responder com sucesso
             response.put("status", "success");
             response.put("message", "Parcela baixada com sucesso.");
         } catch (Exception e) {
-            // Responder com erro
             response.put("status", "error");
             response.put("message", "Erro ao baixar a parcela: " + e.getMessage());
         }
@@ -296,22 +279,15 @@ private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEnt
 
     @PostMapping("/enviar-comprovante/{transacaoId}/{parcelaId}")
     @ResponseBody
-    public ResponseEntity<?> enviarComprovantePagamento(@PathVariable Long transacaoId, @PathVariable Long parcelaId) {
+    public ResponseEntity<?> enviarComprovantePagamento(@PathVariable Integer transacaoId, @PathVariable Integer parcelaId) { // Ajuste para Integer
         try {
-            // Buscar a transação pelo ID
             TransacaoEntity transacao = transacaoService.getTransacaoById(transacaoId)
                     .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
-
-            // Buscar a parcela pelo ID
             ParcelaEntity parcela = parcelaService.findById(parcelaId)
                     .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
-
-            // Verificar se a parcela foi baixada (está com status PAGO)
             if (parcela.getStatus() != StatusParcela.PAGO) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não é possível enviar o comprovante para parcelas não baixadas.");
             }
-
-            // Enviar o comprovante de pagamento com os detalhes
             parcelaService.enviarComprovantePagamento(parcelaId);
             return ResponseEntity.ok("Comprovante enviado com sucesso.");
         } catch (IllegalStateException e) {
@@ -327,35 +303,25 @@ private String construirMensagemWhatsApp(TransacaoDTO transacaoDTO, TransacaoEnt
         List<ClienteEntity> clientes = clienteService.pesquisarClientes(termo);
         return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
-
-    @GetMapping("/pesquisar-produtos/{termo}")
-    @ResponseBody
-    public ResponseEntity<List<ProdutoEntity>> pesquisarProdutos(@PathVariable("termo") String termo) {
-        List<ProdutoEntity> produtos = produtoService.pesquisarProdutos(termo);
-        return ResponseEntity.ok(produtos);
-    }
-
+@GetMapping("/pesquisar-produtos/{termo}")
+@ResponseBody
+public ResponseEntity<List<ProdutoEntity>> pesquisarProdutos(@PathVariable String termo) {
+    List<ProdutoEntity> produtos = produtoService.pesquisarProdutos(termo); // Altere para pesquisarProdutos
+    return ResponseEntity.ok(produtos);
+}
     @PostMapping("/atualizar-status-transacao/{parcelaId}")
     @ResponseBody
-    public ResponseEntity<String> atualizarStatusTransacao(@PathVariable Long parcelaId) {
+    public ResponseEntity<String> atualizarStatusTransacao(@PathVariable Integer parcelaId) { // Ajuste para Integer
         try {
-            // Buscar a parcela pelo ID
             ParcelaEntity parcela = parcelaService.findById(parcelaId)
                     .orElseThrow(() -> new RuntimeException("Parcela não encontrada"));
-
-            // Obter a transação associada à parcela
             TransacaoEntity transacao = parcela.getTransacao();
-
-            // Verificar se todas as parcelas estão pagas
             boolean todasPagas = transacao.getParcelas().stream()
                     .allMatch(p -> p.getStatus() == StatusParcela.PAGO);
-
-            // Atualizar o status da transação se todas as parcelas estiverem pagas
             if (todasPagas) {
                 transacao.setStatus("Pago");
                 transacaoService.atualizarTransacao(transacao.getId(), transacao);
             }
-
             return ResponseEntity.ok("Status da transação atualizado com sucesso.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o status da transação: " + e.getMessage());

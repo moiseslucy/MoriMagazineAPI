@@ -18,53 +18,52 @@ import java.util.List;
 public class TransacaoControllerPostman {
 
     @Autowired
-    private TransacaoServicePostman transacaoService;
+    private TransacaoServicePostman transacaoServicePostman;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TransacaoEntity> criarTransacao(@RequestBody TransacaoEntity transacao) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON); // Definir tipo de conteúdo para JSON
+
         try {
             if (transacao.getCliente() == null || transacao.getCliente().getId() == null) {
-                return ResponseEntity.badRequest().body(null);
+                return new ResponseEntity<>(null, headers, HttpStatus.BAD_REQUEST);
             }
-
             if (transacao.getDataTransacao() == null) {
                 transacao.setDataTransacao(LocalDate.now());
             }
-
             if (transacao.getFormaPagamento() == null || transacao.getFormaPagamento().isEmpty()) {
-                return ResponseEntity.badRequest().body(null);
+                return new ResponseEntity<>(null, headers, HttpStatus.BAD_REQUEST);
             }
-
-            Long clienteId = transacao.getCliente().getId();
-            TransacaoEntity novaTransacao = transacaoService.criarTransacao(transacao, clienteId);
-
-            HttpHeaders headers = new HttpHeaders();
+            Integer clienteId = transacao.getCliente().getId();
+            TransacaoEntity novaTransacao = transacaoServicePostman.criarTransacao(transacao, clienteId);
             headers.setLocation(URI.create("/api/transacoes/" + novaTransacao.getId()));
-
             return new ResponseEntity<>(novaTransacao, headers, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResponseEntity<>(null, headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TransacaoEntity>> listarTransacoes() {
-        List<TransacaoEntity> transacoes = transacaoService.listarTodasTransacoes();
+        List<TransacaoEntity> transacoes = transacaoServicePostman.listarTodasTransacoes();
         return ResponseEntity.ok(transacoes);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransacaoEntity> getTransacaoById(@PathVariable Long id) {
-        return transacaoService.getTransacaoById(id)
+    public ResponseEntity<TransacaoEntity> getTransacaoById(@PathVariable Integer id) {
+        return transacaoServicePostman.getTransacaoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransacaoEntity> atualizarTransacao(@PathVariable Long id, @RequestBody TransacaoEntity transacao) {
+    public ResponseEntity<TransacaoEntity> atualizarTransacao(@PathVariable Integer id, @RequestBody TransacaoEntity transacao) {
         try {
-            TransacaoEntity transacaoAtualizada = transacaoService.atualizarTransacao(id, transacao);
+            TransacaoEntity transacaoAtualizada = transacaoServicePostman.atualizarTransacao(id, transacao);
             return ResponseEntity.ok(transacaoAtualizada);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -72,8 +71,8 @@ public class TransacaoControllerPostman {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deletarTransacao(@PathVariable Long id) {
-        transacaoService.deletarTransacao(id);
+    public ResponseEntity<Void> deletarTransacao(@PathVariable Integer id) {
+        transacaoServicePostman.deletarTransacao(id);
         return ResponseEntity.noContent().build();
     }
 }
