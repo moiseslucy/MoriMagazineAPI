@@ -1,6 +1,6 @@
 
 
-package com.api.MoriMagazineAPI.exeception;
+package com.api.MoriMagazineAPI.exception;
 
     
 

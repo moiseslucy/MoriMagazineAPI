@@ -32,3 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 src/main/resources/application.properties
+**/*.class
+logs/
+*.log
+.log.
+*.zip
+nbproject/
