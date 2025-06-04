@@ -2,7 +2,7 @@ package com.api.MoriMagazineAPI.service;
 
 import com.api.MoriMagazineAPI.data.ProdutoEntity;
 import com.api.MoriMagazineAPI.data.ProdutoRepository;
-import com.api.MoriMagazineAPI.exeception.ResourceNotFoundException;
+import com.api.MoriMagazineAPI.exception.ResourceNotFoundException;
 
 import java.util.List;
 import org.springframework.stereotype.Service;

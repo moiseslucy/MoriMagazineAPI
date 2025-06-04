@@ -3,7 +3,7 @@ package com.api.MoriMagazineAPI.service;
 import com.api.MoriMagazineAPI.data.ClienteEntity;
 import com.api.MoriMagazineAPI.data.ClienteRepository;
 
-import com.api.MoriMagazineAPI.exeception.ResourceNotFoundException;
+import com.api.MoriMagazineAPI.exception.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

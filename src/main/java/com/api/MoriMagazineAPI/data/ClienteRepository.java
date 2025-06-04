@@ -13,10 +13,10 @@ public interface ClienteRepository extends JpaRepository<ClienteEntity, Integer>
 
     public List<ClienteEntity> findByNomeContaining(String nome);
 
-    public Optional<ClienteEntity> findById(Long clienteId);
+    public Optional<ClienteEntity> findById(Integer clienteId);
 // Método para pesquisar clientes pelo nome (ou parte dele)
     List<ClienteEntity> findByNomeContainingIgnoreCase(String nome);
 
-    public boolean existsById(Long clienteId);
+    public boolean existsById(Integer clienteId);
 }
 

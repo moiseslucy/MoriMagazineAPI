@@ -6,12 +6,16 @@ import com.api.MoriMagazineAPI.data.StatusParcela;
 import com.api.MoriMagazineAPI.data.TransacaoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ParcelaService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ParcelaService.class);
 
     private final ParcelaRepository parcelaRepository;
 
@@ -111,6 +115,6 @@ public class ParcelaService {
      */
     private void enviarMensagemWhatsApp(String telefoneCliente, String mensagem) {
         String url = "https://wa.me/" + telefoneCliente + "?text=" + java.net.URLEncoder.encode(mensagem, java.nio.charset.StandardCharsets.UTF_8);
-        System.out.println("URL para enviar mensagem: " + url);
+        logger.info("URL para enviar mensagem: {}", url);
     }
 }
